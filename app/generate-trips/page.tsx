@@ -1,0 +1,503 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Trip, Order, MoveToRouteState } from '@/types';
+import { mockTrips, MAP_CENTER, DEPOT } from '@/lib/mockData';
+import { wouldExceedCapacity, calculateCapacityUsage } from '@/lib/utils';
+import { TripCard } from '@/components/TripCard';
+import { CapacityWarningModal } from '@/components/CapacityWarningModal';
+import { MapView } from '@/components/MapView';
+import { Sidebar } from '@/components/Sidebar';
+import { Toast } from '@/components/Toast';
+import SearchOutlined from '@mui/icons-material/SearchOutlined';
+import ChevronLeftOutlined from '@mui/icons-material/ChevronLeftOutlined';
+import ChevronRightOutlined from '@mui/icons-material/ChevronRightOutlined';
+import ArrowBackOutlined from '@mui/icons-material/ArrowBackOutlined';
+import CheckOutlined from '@mui/icons-material/CheckOutlined';
+
+export default function TripManagementPage() {
+  const router = useRouter();
+  const [trips, setTrips] = useState<Trip[]>(mockTrips);
+  const [selectedOrder, setSelectedOrder] = useState<{ order: Order; trip: Trip } | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [moveToRouteState, setMoveToRouteState] = useState<MoveToRouteState>({
+    isActive: false,
+    selectedOrder: null,
+    selectedTrip: null,
+  });
+  const [capacityWarning, setCapacityWarning] = useState<{
+    show: boolean;
+    overage: number;
+    targetTrip: Trip | null;
+  }>({
+    show: false,
+    overage: 0,
+    targetTrip: null,
+  });
+  const [panToLocation, setPanToLocation] = useState<{ lat: number; lng: number; zoom?: number; timestamp?: number } | null>(null);
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    description?: string;
+    onUndo?: () => void;
+  }>({
+    show: false,
+    message: '',
+  });
+  const [lastMove, setLastMove] = useState<{
+    order: Order;
+    sourceTrip: Trip;
+    targetTrip: Trip;
+  } | null>(null);
+  const [isApprovingTrips, setIsApprovingTrips] = useState(false);
+
+  // Filter trips based on search query (outlet name, order ID, or trip ID)
+  const filteredTrips = trips.map(trip => {
+    if (!searchQuery.trim()) return trip;
+
+    const searchLower = searchQuery.toLowerCase();
+
+    // Check if trip ID matches
+    const tripMatches = trip.tripNumber.toLowerCase().includes(searchLower);
+
+    // If trip ID matches, return all orders
+    if (tripMatches) return trip;
+
+    // Otherwise filter orders by outlet name, order ID, or address
+    const filtered = trip.orders.filter(order =>
+      order.outletName.toLowerCase().includes(searchLower) ||
+      order.id.toLowerCase().includes(searchLower) ||
+      order.address.toLowerCase().includes(searchLower)
+    );
+
+    if (filtered.length === 0) return null;
+
+    return { ...trip, orders: filtered, totalOrders: filtered.length };
+  }).filter(Boolean) as Trip[];
+
+  const hasSearchResults = searchQuery.trim() ? filteredTrips.some(trip => trip.orders.length > 0) : true;
+
+  // Handle ESC key to cancel move operation
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && moveToRouteState.isActive) {
+        setMoveToRouteState({
+          isActive: false,
+          selectedOrder: null,
+          selectedTrip: null,
+        });
+        setSelectedOrder(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [moveToRouteState.isActive]);
+
+  const handleOrderClick = (order: Order, trip: Trip) => {
+    // Handle both selection and deselection (null values)
+    setSelectedOrder(order && trip ? { order, trip } : null);
+
+    // Only pan if we have a valid order with coordinates
+    if (order?.coordinates) {
+      setPanToLocation({
+        lat: order.coordinates[0],
+        lng: order.coordinates[1],
+        zoom: 17,
+        timestamp: Date.now() // Force unique trigger on every click
+      });
+    }
+  };
+
+  const handleMoveToRoute = () => {
+    if (!selectedOrder) return;
+
+    setMoveToRouteState({
+      isActive: true,
+      selectedOrder: selectedOrder.order,
+      selectedTrip: selectedOrder.trip,
+    });
+  };
+
+  const handleTargetPinClick = (targetTrip: Trip) => {
+    if (!moveToRouteState.isActive || !moveToRouteState.selectedOrder || !moveToRouteState.selectedTrip) {
+      return;
+    }
+
+    // Can't move to the same trip
+    if (targetTrip.id === moveToRouteState.selectedTrip.id) {
+      alert('Cannot move order to the same trip');
+      return;
+    }
+
+    // Check capacity
+    const hideWarning = typeof window !== 'undefined' && localStorage.getItem('hideCapacityWarning') === 'true';
+    const { exceeds, overage } = wouldExceedCapacity(
+      moveToRouteState.selectedOrder.cubes,
+      targetTrip.totalVolume
+    );
+
+    console.log('Capacity Check:', {
+      orderCubes: moveToRouteState.selectedOrder.cubes,
+      targetTripVolume: targetTrip.totalVolume,
+      newVolume: targetTrip.totalVolume + moveToRouteState.selectedOrder.cubes,
+      exceeds,
+      overage,
+      hideWarning,
+      vehicleCapacity: 860,
+    });
+
+    if (exceeds && !hideWarning) {
+      console.log('✅ Showing capacity warning modal');
+      setCapacityWarning({
+        show: true,
+        overage,
+        targetTrip,
+      });
+    } else {
+      if (exceeds && hideWarning) {
+        console.log('⚠️ Capacity would be exceeded but warnings are disabled. Clear localStorage to re-enable.');
+      }
+      console.log('Proceeding without warning');
+      performMoveOrder(targetTrip);
+    }
+  };
+
+  const performMoveOrder = (targetTrip: Trip) => {
+    if (!moveToRouteState.selectedOrder || !moveToRouteState.selectedTrip) return;
+
+    // Save the move for undo functionality
+    setLastMove({
+      order: moveToRouteState.selectedOrder,
+      sourceTrip: moveToRouteState.selectedTrip,
+      targetTrip: targetTrip,
+    });
+
+    const updatedTrips = trips.map((trip) => {
+      // Remove order from source trip
+      if (trip.id === moveToRouteState.selectedTrip!.id) {
+        const newOrders = trip.orders.filter((o) => o.id !== moveToRouteState.selectedOrder!.id);
+        const newVolume = newOrders.reduce((sum, o) => sum + o.cubes, 0);
+        return {
+          ...trip,
+          orders: newOrders.map((order, index) => ({
+            ...order,
+            deliverySequence: index + 1,
+          })),
+          totalOrders: newOrders.length,
+          totalVolume: newVolume,
+          capacityUsage: calculateCapacityUsage(newVolume),
+        };
+      }
+
+      // Add order to target trip
+      if (trip.id === targetTrip.id) {
+        // Check if order ID already exists in target trip
+        const orderIdExists = trip.orders.some((o) => o.id === moveToRouteState.selectedOrder!.id);
+
+        // Generate new unique order ID if there's a conflict
+        let newOrderId = moveToRouteState.selectedOrder!.id;
+        if (orderIdExists) {
+          // Generate a new unique ID by finding the highest existing ID and incrementing
+          const allOrderIds = trip.orders.map((o) => parseInt(o.id, 10)).filter((id) => !isNaN(id));
+          const maxId = allOrderIds.length > 0 ? Math.max(...allOrderIds) : 0;
+          newOrderId = String(maxId + 1).padStart(4, '0');
+        }
+
+        const newOrders = [
+          ...trip.orders,
+          {
+            ...moveToRouteState.selectedOrder!,
+            id: newOrderId,
+            deliverySequence: trip.orders.length + 1,
+          },
+        ];
+        const newVolume = newOrders.reduce((sum, o) => sum + o.cubes, 0);
+        return {
+          ...trip,
+          orders: newOrders,
+          totalOrders: newOrders.length,
+          totalVolume: newVolume,
+          capacityUsage: calculateCapacityUsage(newVolume),
+        };
+      }
+
+      return trip;
+    });
+
+    setTrips(updatedTrips);
+    setMoveToRouteState({
+      isActive: false,
+      selectedOrder: null,
+      selectedTrip: null,
+    });
+    setSelectedOrder(null);
+    setCapacityWarning({ show: false, overage: 0, targetTrip: null });
+
+    // Show toast notification
+    setToast({
+      show: true,
+      message: `Order ${moveToRouteState.selectedOrder.id} moved`,
+      description: `The order has been moved to Trip ${targetTrip.tripNumber}`,
+      onUndo: handleUndoMove,
+    });
+  };
+
+  const handleUndoMove = () => {
+    if (!lastMove) return;
+
+    const { order, sourceTrip, targetTrip } = lastMove;
+
+    const updatedTrips = trips.map((trip) => {
+      // Remove order from target trip
+      if (trip.id === targetTrip.id) {
+        const newOrders = trip.orders.filter((o) => o.id !== order.id);
+        const newVolume = newOrders.reduce((sum, o) => sum + o.cubes, 0);
+        return {
+          ...trip,
+          orders: newOrders.map((order, index) => ({
+            ...order,
+            deliverySequence: index + 1,
+          })),
+          totalOrders: newOrders.length,
+          totalVolume: newVolume,
+          capacityUsage: calculateCapacityUsage(newVolume),
+        };
+      }
+
+      // Add order back to source trip
+      if (trip.id === sourceTrip.id) {
+        const newOrders = [...trip.orders, order];
+        const newVolume = newOrders.reduce((sum, o) => sum + o.cubes, 0);
+        return {
+          ...trip,
+          orders: newOrders.map((order, index) => ({
+            ...order,
+            deliverySequence: index + 1,
+          })),
+          totalOrders: newOrders.length,
+          totalVolume: newVolume,
+          capacityUsage: calculateCapacityUsage(newVolume),
+        };
+      }
+
+      return trip;
+    });
+
+    setTrips(updatedTrips);
+    setLastMove(null);
+  };
+
+  const handleCapacityWarningProceed = () => {
+    if (capacityWarning.targetTrip) {
+      performMoveOrder(capacityWarning.targetTrip);
+    }
+  };
+
+  const handleApproveTrips = async () => {
+    setIsApprovingTrips(true);
+
+    // Simulate loading state
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Store toast data for shipments page to show
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('showApprovalToast', JSON.stringify({
+        message: 'Trips approved',
+        description: `${trips.length} trips have been created.`,
+      }));
+    }
+
+    // Navigate to trips section
+    router.push('/shipments?tab=trips');
+  };
+
+  const deliveryType = trips[0]?.deliveryType || 'CORE';
+
+  return (
+    <div className="flex h-screen w-screen bg-gray-50">
+      {/* Navigation Sidebar */}
+      <Sidebar activeItem="trips" />
+
+      {/* Main Content Area */}
+      <div className="flex flex-col flex-1">
+        {/* Page Header */}
+        <header className="border-b border-gray-200 bg-white px-4 py-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push('/shipments?tab=orders')}
+            className="rounded-md p-1 hover:bg-gray-100"
+            aria-label="Go back"
+          >
+            <ArrowBackOutlined sx={{ fontSize: 20, color: '#374151' }} />
+          </button>
+          <h1 className="text-2xl font-semibold text-gray-900">Generate Trips</h1>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <aside className={`${isSidebarCollapsed ? 'w-0' : 'w-[530px]'} flex flex-col border-r border-gray-200 bg-white transition-all duration-300 overflow-hidden`}>
+          {/* Header */}
+          <div className="border-b border-gray-200 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col gap-0.5">
+                <h2 className="text-xl font-bold text-gray-900">Trips ({trips.length})</h2>
+                <p className="text-sm text-gray-600">Preview and approve generated trips.</p>
+              </div>
+              <div className="flex items-center gap-2">
+                {typeof window !== 'undefined' && localStorage.getItem('hideCapacityWarning') === 'true' && (
+                  <button
+                    onClick={() => {
+                      localStorage.removeItem('hideCapacityWarning');
+                      window.location.reload();
+                    }}
+                    className="rounded-md px-3 py-1.5 text-xs font-semibold bg-amber-100 text-amber-800 hover:bg-amber-200"
+                    title="Capacity warnings are currently disabled"
+                  >
+                    Enable Warnings
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                  className="rounded-md p-2 hover:bg-gray-100 border border-gray-300"
+                  title="Collapse sidebar"
+                >
+                  <ChevronLeftOutlined sx={{ fontSize: 20, color: '#374151' }} />
+                </button>
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className="relative mt-4">
+              <SearchOutlined sx={{ fontSize: 16, color: '#9CA3AF', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                type="text"
+                placeholder="Search outlet, order ID or Trip ID"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full rounded-md border py-2 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
+                style={{ backgroundColor: '#FAFAFA', borderColor: '#E3E3E3' }}
+              />
+            </div>
+          </div>
+
+          {/* Trip Cards or Empty State */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {hasSearchResults ? (
+              filteredTrips.map((trip) => (
+                <TripCard key={trip.id} trip={trip} onOrderClick={handleOrderClick} />
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-center px-4">
+                <div className="mb-4">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-400 mx-auto">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No results found</h3>
+                <p className="text-sm text-gray-600 max-w-sm">
+                  We couldn't find any outlets matching "<span className="font-medium">{searchQuery}</span>". Try searching with a different keyword.
+                </p>
+              </div>
+            )}
+          </div>
+        </aside>
+
+        {/* Map View */}
+        <main className="flex-1 relative">
+          {/* Expand Button (when sidebar is collapsed) */}
+          {isSidebarCollapsed && (
+            <button
+              onClick={() => setIsSidebarCollapsed(false)}
+              className="absolute left-4 top-4 z-[1000] rounded-md p-2 bg-white border border-gray-300 shadow-lg hover:bg-gray-50"
+              title="Expand sidebar"
+            >
+              <ChevronRightOutlined sx={{ fontSize: 20, color: '#374151' }} />
+            </button>
+          )}
+
+          <MapView
+            trips={filteredTrips}
+            depot={DEPOT}
+            center={MAP_CENTER}
+            selectedOrder={selectedOrder}
+            onOrderClick={handleOrderClick}
+            onMoveToRoute={handleMoveToRoute}
+            moveToRouteActive={moveToRouteState.isActive}
+            onTargetPinClick={handleTargetPinClick}
+            sidebarCollapsed={isSidebarCollapsed}
+            moveToRouteState={{
+              selectedOrder: moveToRouteState.selectedOrder,
+              selectedTrip: moveToRouteState.selectedTrip,
+            }}
+            panToLocation={panToLocation}
+          />
+        </main>
+      </div>
+
+      {/* Footer - Outside sidebar, always visible */}
+      <footer className="border-t border-gray-200 bg-white px-4 py-4">
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => router.push('/shipments?tab=orders')}
+            className="rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
+          >
+            <ArrowBackOutlined sx={{ fontSize: 16 }} />
+            Back to Orders
+          </button>
+          <button
+            onClick={handleApproveTrips}
+            disabled={isApprovingTrips}
+            className="rounded-md bg-gray-900 px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isApprovingTrips ? (
+              <>
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Approving...
+              </>
+            ) : (
+              <>
+                <CheckOutlined sx={{ fontSize: 20 }} />
+                Approve Trips
+              </>
+            )}
+          </button>
+        </div>
+      </footer>
+
+      {/* Capacity Warning Modal */}
+      <CapacityWarningModal
+        isOpen={capacityWarning.show}
+        overage={capacityWarning.overage}
+        onCancel={() => {
+          setCapacityWarning({ show: false, overage: 0, targetTrip: null });
+          setMoveToRouteState({
+            isActive: false,
+            selectedOrder: null,
+            selectedTrip: null,
+          });
+          setSelectedOrder(null);
+        }}
+        onProceed={handleCapacityWarningProceed}
+      />
+
+      {/* Toast Notification */}
+      <Toast
+        message={toast.message}
+        description={toast.description}
+        isVisible={toast.show}
+        onClose={() => setToast({ ...toast, show: false })}
+        onUndo={toast.onUndo}
+      />
+      </div>
+    </div>
+  );
+}
