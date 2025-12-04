@@ -312,19 +312,37 @@ export function MapView({
     );
   }
 
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+  const apiKey = (process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '').trim();
 
-  if (!apiKey || apiKey === 'your_api_key_here') {
+  // Debug logging (will show in browser console)
+  if (typeof window !== 'undefined') {
+    console.log('Google Maps API Key loaded:', apiKey ? `${apiKey.substring(0, 10)}...` : 'MISSING');
+    console.log('API Key length:', apiKey.length);
+  }
+
+  // Validate API key format (Google API keys are typically 39 chars starting with AIzaSy)
+  if (!apiKey) {
     return (
       <div className="h-full w-full bg-gray-100 flex items-center justify-center">
         <div className="text-center p-8">
-          <div className="text-red-600 font-semibold mb-2">Google Maps API Key Required</div>
+          <div className="text-red-600 font-semibold mb-2">Google Maps API Key Missing</div>
           <div className="text-gray-600 text-sm">
-            Please add your Google Maps API key to .env.local
+            The environment variable NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is not set.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (apiKey === 'your_api_key_here' || apiKey.length < 20) {
+    return (
+      <div className="h-full w-full bg-gray-100 flex items-center justify-center">
+        <div className="text-center p-8">
+          <div className="text-red-600 font-semibold mb-2">Invalid Google Maps API Key</div>
+          <div className="text-gray-600 text-sm">
+            Please check that NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is correctly set.
             <br />
-            <code className="bg-gray-200 px-2 py-1 rounded mt-2 inline-block">
-              NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_key
-            </code>
+            <span className="text-xs mt-2 block">Key length: {apiKey.length} characters</span>
           </div>
         </div>
       </div>
