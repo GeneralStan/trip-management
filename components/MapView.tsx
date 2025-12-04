@@ -13,13 +13,7 @@ interface MapViewProps {
   selectedOrder: { order: Order; trip: Trip } | null;
   onOrderClick: (order: Order, trip: Trip) => void;
   onMoveToRoute: () => void;
-  moveToRouteActive: boolean;
-  onTargetPinClick: (targetTrip: Trip) => void;
   sidebarCollapsed?: boolean;
-  moveToRouteState?: {
-    selectedOrder: Order | null;
-    selectedTrip: Trip | null;
-  };
   panToLocation?: { lat: number; lng: number; zoom?: number; timestamp?: number } | null;
 }
 
@@ -266,10 +260,7 @@ export function MapView({
   selectedOrder,
   onOrderClick,
   onMoveToRoute,
-  moveToRouteActive,
-  onTargetPinClick,
   sidebarCollapsed,
-  moveToRouteState,
   panToLocation,
 }: MapViewProps) {
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
@@ -373,25 +364,13 @@ export function MapView({
                 setHoveredDepot(false);
               }}
             >
-              {createDepotIcon(moveToRouteActive)}
+              {createDepotIcon(false)}
             </div>
           </AdvancedMarker>
 
           {/* Order Markers */}
           {trips.map((trip) =>
             trip.orders.map((order) => {
-              // Check if this is the selected order being moved
-              const isSelectedForMove =
-                moveToRouteActive &&
-                moveToRouteState?.selectedOrder?.id === order.id &&
-                moveToRouteState?.selectedTrip?.id === trip.id;
-
-              // Check if this pin should be de-emphasized
-              const shouldDeEmphasize =
-                moveToRouteActive &&
-                moveToRouteState?.selectedTrip?.id === trip.id &&
-                moveToRouteState?.selectedOrder?.id !== order.id;
-
               const markerId = `${trip.id}-${order.id}`;
 
               return (
@@ -399,23 +378,19 @@ export function MapView({
                   key={markerId}
                   position={{ lat: order.coordinates[0], lng: order.coordinates[1] }}
                   onClick={(e: any) => {
-                    if (moveToRouteActive) {
-                      onTargetPinClick(trip);
-                    } else {
-                      // Clear hover tooltip when clicking
-                      setHoveredMarker(null);
+                    // Clear hover tooltip when clicking
+                    setHoveredMarker(null);
 
-                      // Get marker element and its position
-                      const markerElement = markerRefs.current[markerId];
-                      if (markerElement) {
-                        const bounds = markerElement.getBoundingClientRect();
-                        // Position at the horizontal center, top of the pin
-                        setTooltipPosition({
-                          x: bounds.left + bounds.width / 2,
-                          y: bounds.top
-                        });
-                        onOrderClick(order, trip);
-                      }
+                    // Get marker element and its position
+                    const markerElement = markerRefs.current[markerId];
+                    if (markerElement) {
+                      const bounds = markerElement.getBoundingClientRect();
+                      // Position at the horizontal center, top of the pin
+                      setTooltipPosition({
+                        x: bounds.left + bounds.width / 2,
+                        y: bounds.top
+                      });
+                      onOrderClick(order, trip);
                     }
                   }}
                 >
@@ -428,21 +403,21 @@ export function MapView({
                       }
                     }}
                     onMouseEnter={() => {
-                      setHoveredMarker({ order, trip, shouldDeEmphasize });
+                      setHoveredMarker({ order, trip, shouldDeEmphasize: false });
                     }}
                     onMouseLeave={() => {
                       setHoveredMarker(null);
                     }}
                   >
-                    {createPinIcon(trip.color, isSelectedForMove, shouldDeEmphasize)}
+                    {createPinIcon(trip.color, false, false)}
                   </div>
                 </AdvancedMarker>
               );
             })
           )}
 
-          {/* Hover tooltip - shown when hovering and either no click tooltip is open OR in edit mode */}
-          {hoveredMarker && (!selectedOrder || moveToRouteActive) && (
+          {/* Hover tooltip - shown when hovering and no click tooltip is open */}
+          {hoveredMarker && !selectedOrder && (
             <InfoWindow
               position={{
                 lat: hoveredMarker.order.coordinates[0],

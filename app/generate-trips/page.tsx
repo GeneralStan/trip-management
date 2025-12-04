@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trip, Order, MoveToRouteState } from '@/types';
+import { Trip, Order } from '@/types';
 import { mockTrips, MAP_CENTER, DEPOT } from '@/lib/mockData';
-import { wouldExceedCapacity, calculateCapacityUsage } from '@/lib/utils';
+import { calculateCapacityUsage } from '@/lib/utils';
 import { TripCard } from '@/components/TripCard';
-import { CapacityWarningModal } from '@/components/CapacityWarningModal';
 import { MapView } from '@/components/MapView';
 import { Sidebar } from '@/components/Sidebar';
 import { Toast } from '@/components/Toast';
+import { MoveOrderModal } from '@/components/MoveOrderModal';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import ChevronLeftOutlined from '@mui/icons-material/ChevronLeftOutlined';
 import ChevronRightOutlined from '@mui/icons-material/ChevronRightOutlined';
@@ -22,20 +22,11 @@ export default function TripManagementPage() {
   const [selectedOrder, setSelectedOrder] = useState<{ order: Order; trip: Trip } | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [moveToRouteState, setMoveToRouteState] = useState<MoveToRouteState>({
-    isActive: false,
-    selectedOrder: null,
-    selectedTrip: null,
-  });
-  const [capacityWarning, setCapacityWarning] = useState<{
-    show: boolean;
-    overage: number;
-    targetTrip: Trip | null;
-  }>({
-    show: false,
-    overage: 0,
-    targetTrip: null,
-  });
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [orderToMove, setOrderToMove] = useState<{
+    order: Order;
+    sourceTrip: Trip;
+  } | null>(null);
   const [panToLocation, setPanToLocation] = useState<{ lat: number; lng: number; zoom?: number; timestamp?: number } | null>(null);
   const [toast, setToast] = useState<{
     show: boolean;
@@ -79,23 +70,6 @@ export default function TripManagementPage() {
 
   const hasSearchResults = searchQuery.trim() ? filteredTrips.some(trip => trip.orders.length > 0) : true;
 
-  // Handle ESC key to cancel move operation
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && moveToRouteState.isActive) {
-        setMoveToRouteState({
-          isActive: false,
-          selectedOrder: null,
-          selectedTrip: null,
-        });
-        setSelectedOrder(null);
-      }
-    };
-
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [moveToRouteState.isActive]);
-
   const handleOrderClick = (order: Order, trip: Trip) => {
     // Handle both selection and deselection (null values)
     setSelectedOrder(order && trip ? { order, trip } : null);
@@ -112,73 +86,34 @@ export default function TripManagementPage() {
   };
 
   const handleMoveToRoute = () => {
-    if (!selectedOrder) return;
-
-    setMoveToRouteState({
-      isActive: true,
-      selectedOrder: selectedOrder.order,
-      selectedTrip: selectedOrder.trip,
-    });
-  };
-
-  const handleTargetPinClick = (targetTrip: Trip) => {
-    if (!moveToRouteState.isActive || !moveToRouteState.selectedOrder || !moveToRouteState.selectedTrip) {
-      return;
-    }
-
-    // Can't move to the same trip
-    if (targetTrip.id === moveToRouteState.selectedTrip.id) {
-      alert('Cannot move order to the same trip');
-      return;
-    }
-
-    // Check capacity
-    const hideWarning = typeof window !== 'undefined' && localStorage.getItem('hideCapacityWarning') === 'true';
-    const { exceeds, overage } = wouldExceedCapacity(
-      moveToRouteState.selectedOrder.cubes,
-      targetTrip.totalVolume
-    );
-
-    console.log('Capacity Check:', {
-      orderCubes: moveToRouteState.selectedOrder.cubes,
-      targetTripVolume: targetTrip.totalVolume,
-      newVolume: targetTrip.totalVolume + moveToRouteState.selectedOrder.cubes,
-      exceeds,
-      overage,
-      hideWarning,
-      vehicleCapacity: 860,
-    });
-
-    if (exceeds && !hideWarning) {
-      console.log('✅ Showing capacity warning modal');
-      setCapacityWarning({
-        show: true,
-        overage,
-        targetTrip,
+    if (selectedOrder) {
+      setOrderToMove({
+        order: selectedOrder.order,
+        sourceTrip: selectedOrder.trip,
       });
-    } else {
-      if (exceeds && hideWarning) {
-        console.log('⚠️ Capacity would be exceeded but warnings are disabled. Clear localStorage to re-enable.');
-      }
-      console.log('Proceeding without warning');
-      performMoveOrder(targetTrip);
+      setIsMoveModalOpen(true);
+      setSelectedOrder(null); // Close tooltip
     }
   };
 
-  const performMoveOrder = (targetTrip: Trip) => {
-    if (!moveToRouteState.selectedOrder || !moveToRouteState.selectedTrip) return;
+  const handleMoveFromModal = (targetTrip: Trip) => {
+    if (!orderToMove) return;
 
+    performMoveOrder(orderToMove.order, orderToMove.sourceTrip, targetTrip);
+  };
+
+  const performMoveOrder = (order: Order, sourceTrip: Trip, targetTrip: Trip) => {
     // Save the move for undo functionality
     setLastMove({
-      order: moveToRouteState.selectedOrder,
-      sourceTrip: moveToRouteState.selectedTrip,
-      targetTrip: targetTrip,
+      order,
+      sourceTrip,
+      targetTrip,
     });
 
     const updatedTrips = trips.map((trip) => {
       // Remove order from source trip
-      if (trip.id === moveToRouteState.selectedTrip!.id) {
-        const newOrders = trip.orders.filter((o) => o.id !== moveToRouteState.selectedOrder!.id);
+      if (trip.id === sourceTrip.id) {
+        const newOrders = trip.orders.filter((o) => o.id !== order.id);
         const newVolume = newOrders.reduce((sum, o) => sum + o.cubes, 0);
         return {
           ...trip,
@@ -195,10 +130,10 @@ export default function TripManagementPage() {
       // Add order to target trip
       if (trip.id === targetTrip.id) {
         // Check if order ID already exists in target trip
-        const orderIdExists = trip.orders.some((o) => o.id === moveToRouteState.selectedOrder!.id);
+        const orderIdExists = trip.orders.some((o) => o.id === order.id);
 
         // Generate new unique order ID if there's a conflict
-        let newOrderId = moveToRouteState.selectedOrder!.id;
+        let newOrderId = order.id;
         if (orderIdExists) {
           // Generate a new unique ID by finding the highest existing ID and incrementing
           const allOrderIds = trip.orders.map((o) => parseInt(o.id, 10)).filter((id) => !isNaN(id));
@@ -209,7 +144,7 @@ export default function TripManagementPage() {
         const newOrders = [
           ...trip.orders,
           {
-            ...moveToRouteState.selectedOrder!,
+            ...order,
             id: newOrderId,
             deliverySequence: trip.orders.length + 1,
           },
@@ -228,18 +163,14 @@ export default function TripManagementPage() {
     });
 
     setTrips(updatedTrips);
-    setMoveToRouteState({
-      isActive: false,
-      selectedOrder: null,
-      selectedTrip: null,
-    });
+    setIsMoveModalOpen(false);
+    setOrderToMove(null);
     setSelectedOrder(null);
-    setCapacityWarning({ show: false, overage: 0, targetTrip: null });
 
     // Show toast notification
     setToast({
       show: true,
-      message: `Order ${moveToRouteState.selectedOrder.id} moved`,
+      message: `Order ${order.id} moved`,
       description: `The order has been moved to Trip ${targetTrip.tripNumber}`,
       onUndo: handleUndoMove,
     });
@@ -288,12 +219,6 @@ export default function TripManagementPage() {
 
     setTrips(updatedTrips);
     setLastMove(null);
-  };
-
-  const handleCapacityWarningProceed = () => {
-    if (capacityWarning.targetTrip) {
-      performMoveOrder(capacityWarning.targetTrip);
-    }
   };
 
   const handleApproveTrips = async () => {
@@ -349,18 +274,6 @@ export default function TripManagementPage() {
                 <p className="text-sm text-gray-600">Preview and approve generated trips.</p>
               </div>
               <div className="flex items-center gap-2">
-                {typeof window !== 'undefined' && localStorage.getItem('hideCapacityWarning') === 'true' && (
-                  <button
-                    onClick={() => {
-                      localStorage.removeItem('hideCapacityWarning');
-                      window.location.reload();
-                    }}
-                    className="rounded-md px-3 py-1.5 text-xs font-semibold bg-amber-100 text-amber-800 hover:bg-amber-200"
-                    title="Capacity warnings are currently disabled"
-                  >
-                    Enable Warnings
-                  </button>
-                )}
                 <button
                   onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                   className="rounded-md p-2 hover:bg-gray-100 border border-gray-300"
@@ -428,13 +341,7 @@ export default function TripManagementPage() {
             selectedOrder={selectedOrder}
             onOrderClick={handleOrderClick}
             onMoveToRoute={handleMoveToRoute}
-            moveToRouteActive={moveToRouteState.isActive}
-            onTargetPinClick={handleTargetPinClick}
             sidebarCollapsed={isSidebarCollapsed}
-            moveToRouteState={{
-              selectedOrder: moveToRouteState.selectedOrder,
-              selectedTrip: moveToRouteState.selectedTrip,
-            }}
             panToLocation={panToLocation}
           />
         </main>
@@ -473,20 +380,17 @@ export default function TripManagementPage() {
         </div>
       </footer>
 
-      {/* Capacity Warning Modal */}
-      <CapacityWarningModal
-        isOpen={capacityWarning.show}
-        overage={capacityWarning.overage}
-        onCancel={() => {
-          setCapacityWarning({ show: false, overage: 0, targetTrip: null });
-          setMoveToRouteState({
-            isActive: false,
-            selectedOrder: null,
-            selectedTrip: null,
-          });
-          setSelectedOrder(null);
+      {/* Move Order Modal */}
+      <MoveOrderModal
+        isOpen={isMoveModalOpen}
+        onClose={() => {
+          setIsMoveModalOpen(false);
+          setOrderToMove(null);
         }}
-        onProceed={handleCapacityWarningProceed}
+        selectedOrder={orderToMove?.order || null}
+        currentTrip={orderToMove?.sourceTrip || null}
+        availableTrips={trips.filter(t => t.id !== orderToMove?.sourceTrip.id)}
+        onMoveOrder={handleMoveFromModal}
       />
 
       {/* Toast Notification */}
