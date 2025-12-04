@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, AlertTriangle, Check, ArrowRight } from 'lucide-react';
+import SearchOutlined from '@mui/icons-material/SearchOutlined';
+import CancelOutlined from '@mui/icons-material/CancelOutlined';
+import WarningAmberOutlined from '@mui/icons-material/WarningAmberOutlined';
+import CheckOutlined from '@mui/icons-material/CheckOutlined';
+import ArrowForwardOutlined from '@mui/icons-material/ArrowForwardOutlined';
 import type { Order, Trip } from '@/types';
 
 const VEHICLE_CAPACITY = 860; // cubes
@@ -166,65 +170,74 @@ export function MoveOrderModal({
       {/* Modal Container */}
       <div
         ref={modalRef}
-        className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
+        className="bg-white rounded-[10px] shadow-xl w-[480px] max-h-[90vh] flex flex-col overflow-hidden"
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-start justify-between mb-2">
+        <div className="p-4" style={{ borderBottom: '1px solid #E3E3E3' }}>
+          <div className="flex items-center justify-between">
             <h2
               id="modal-title"
-              className="text-xl font-semibold text-gray-900"
+              className="text-2xl font-semibold leading-8"
+              style={{ color: '#0D0D0D' }}
             >
               Move to another trip
             </h2>
             <button
               onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors -mr-2 -mt-2 p-2"
+              className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded transition-colors"
               aria-label="Close modal"
             >
-              <X className="w-5 h-5" />
+              <CancelOutlined sx={{ fontSize: 24, color: '#9CA3AF' }} />
             </button>
           </div>
-          <p className="text-sm text-gray-600">
-            Select a trip below and move Order #{selectedOrder.id} to its delivery route.
+        </div>
+
+        {/* Body Section */}
+        <div className="px-4 pt-4">
+          {/* Capacity Warning Banner (appears after selection) */}
+          {capacityWarning?.show && (
+            <div className="mb-6 flex items-start gap-4 rounded-[10px]" style={{ backgroundColor: '#FFF8EB', border: '1px solid #FB8500', padding: '12px 16px' }}>
+              <div className="flex items-start py-1">
+                <WarningAmberOutlined sx={{ fontSize: 20, color: '#FB8500' }} />
+              </div>
+              <div className="flex-1">
+                <div className="font-semibold text-base leading-6" style={{ color: '#0D0D0D' }}>
+                  Vehicle Limit
+                </div>
+                <div className="text-sm leading-4 mt-1" style={{ color: '#101010' }}>
+                  The vehicle will carry {capacityWarning.overage} cubes over capacity for this trip.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Description */}
+          <p className={`text-base leading-6 ${capacityWarning?.show ? '' : 'mt-2'}`} style={{ color: '#2F2F2F' }}>
+            Select a trip below and move Order <span className="font-semibold">#{selectedOrder.id}</span> to it's delivery route.
           </p>
         </div>
 
-        {/* Capacity Warning Banner (appears after selection) */}
-        {capacityWarning?.show && (
-          <div className="mx-6 mt-4 flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <div className="font-semibold text-amber-900 text-sm">
-                Vehicle Limit
-              </div>
-              <div className="text-sm text-amber-800 mt-1">
-                The vehicle will carry {capacityWarning.overage} cubes over capacity for this trip.
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Search Field */}
-        <div className="px-6 pt-4 pb-2">
+        <div className="px-4 pt-4 pb-0">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <SearchOutlined sx={{ fontSize: 16, color: '#9CA3AF', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
             <input
               ref={searchInputRef}
               type="text"
               placeholder="Search trip number"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              className="w-full rounded-[10px] border py-3 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
+              style={{ backgroundColor: '#FAFAFA', borderColor: '#E3E3E3' }}
             />
           </div>
         </div>
 
         {/* Trip List */}
-        <div className="flex-1 overflow-y-auto px-6 py-2">
+        <div className="h-[217px] overflow-x-clip overflow-y-auto px-4 py-4">
           {hasNoTrips ? (
             <div className="py-12 text-center">
-              <p className="text-gray-500 text-sm">
+              <p className="text-sm" style={{ color: '#808080' }}>
                 {searchQuery.trim()
                   ? 'No trips found matching your search'
                   : 'No other trips available with the same delivery type'
@@ -232,7 +245,7 @@ export function MoveOrderModal({
               </p>
             </div>
           ) : (
-            <div className="space-y-2 pb-4">
+            <div className="space-y-4 pb-5">
               {filteredTrips.map((trip) => {
                 const isSelected = selectedTrip?.id === trip.id;
                 const availableCapacity = VEHICLE_CAPACITY - trip.totalVolume;
@@ -241,34 +254,32 @@ export function MoveOrderModal({
                   <div
                     key={trip.id}
                     onClick={() => handleTripClick(trip)}
-                    className={`
-                      flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all
-                      border-2
-                      ${isSelected
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-transparent hover:bg-gray-50 hover:border-gray-200'
-                      }
-                    `}
+                    className="flex items-center gap-3 rounded-[8px] cursor-pointer transition-all h-[76px]"
+                    style={{
+                      backgroundColor: '#FEFEFE',
+                      border: isSelected ? '1px solid #080A12' : '1px solid #E3E3E3',
+                      padding: '16px'
+                    }}
                   >
                     {/* Color Indicator */}
                     <div
-                      className="w-4 h-4 rounded flex-shrink-0"
+                      className="w-[18px] h-[18px] rounded flex-shrink-0"
                       style={{ backgroundColor: trip.color }}
                     />
 
                     {/* Trip Info */}
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-gray-900 text-base">
+                      <div className="font-semibold text-base leading-6" style={{ color: '#0D0D0D' }}>
                         {trip.tripNumber}
                       </div>
-                      <div className="text-xs text-gray-600 mt-1 flex items-center gap-2 flex-wrap">
+                      <div className="text-xs leading-4 mt-1 flex items-center gap-2 flex-wrap" style={{ color: '#4D4D4D' }}>
                         <span>{trip.totalOrders} Orders</span>
                         <span>•</span>
                         <span>{trip.totalVolume} Cubes</span>
                         <span>•</span>
                         <span>{trip.capacityUsage}% Capacity</span>
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs leading-4 mt-1" style={{ color: '#808080' }}>
                         {availableCapacity > 0
                           ? `${availableCapacity} cubes available`
                           : `${Math.abs(availableCapacity)} cubes over capacity`
@@ -278,7 +289,7 @@ export function MoveOrderModal({
 
                     {/* Checkmark */}
                     {isSelected && (
-                      <Check className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                      <CheckOutlined sx={{ fontSize: 24, color: '#0D0D0D' }} />
                     )}
                   </div>
                 );
@@ -288,26 +299,31 @@ export function MoveOrderModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 border-t border-gray-200 flex items-center justify-between gap-3">
+        <div className="p-4 flex items-center justify-between gap-3" style={{ borderTop: '1px solid #E3E3E3' }}>
           <button
             onClick={handleClose}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            className="px-4 py-3 rounded-[10px] font-semibold text-sm leading-4 transition-colors"
+            style={{
+              backgroundColor: '#FEFEFE',
+              border: '1px solid #E3E3E3',
+              color: '#0D0D0D'
+            }}
           >
             Cancel
           </button>
           <button
             onClick={handleMove}
             disabled={isMoveDisabled}
-            className={`
-              px-6 py-2 rounded-lg font-medium flex items-center gap-2 transition-all
-              ${isMoveDisabled
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-gray-900 text-white hover:bg-gray-800'
-              }
-            `}
+            className="px-4 py-3 rounded-[12px] font-semibold text-sm leading-4 flex items-center gap-2 transition-all"
+            style={{
+              backgroundColor: isMoveDisabled ? '#E3E3E3' : '#080A12',
+              color: isMoveDisabled ? '#808080' : '#FAFAFA',
+              opacity: isMoveDisabled ? 0.6 : 1,
+              cursor: isMoveDisabled ? 'not-allowed' : 'pointer'
+            }}
           >
             <span>Move</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowForwardOutlined sx={{ fontSize: 16 }} />
           </button>
         </div>
       </div>
