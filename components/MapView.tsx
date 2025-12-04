@@ -298,7 +298,7 @@ export function MapView({
             y: bounds.top
           });
         }
-      }, 400); // Wait for pan/zoom animation
+      }, 600); // Wait for pan/zoom animation (Google Maps panTo takes 450-500ms)
 
       return () => clearTimeout(timeout);
     }
