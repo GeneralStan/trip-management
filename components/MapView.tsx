@@ -427,18 +427,10 @@ export function MapView({
               headerDisabled
               pixelOffset={[0, -32]}
             >
-              {moveToRouteActive ? (
-                <div className="text-xs font-medium text-gray-900">
-                  {hoveredMarker.shouldDeEmphasize
-                    ? 'Cannot move order here'
-                    : `Move to Trip ${hoveredMarker.trip.tripNumber}`}
-                </div>
-              ) : (
-                <div className="text-xs leading-relaxed">
-                  <div className="font-medium text-gray-900">Order {hoveredMarker.order.id}</div>
-                  <div className="text-gray-600 mt-0.5">Trip: {hoveredMarker.trip.tripNumber}</div>
-                </div>
-              )}
+              <div className="text-xs leading-relaxed">
+                <div className="font-medium text-gray-900">Order {hoveredMarker.order.id}</div>
+                <div className="text-gray-600 mt-0.5">Trip: {hoveredMarker.trip.tripNumber}</div>
+              </div>
             </InfoWindow>
           )}
 
@@ -454,7 +446,7 @@ export function MapView({
               pixelOffset={[0, -44]}
             >
               <div className="text-xs font-medium text-gray-900">
-                {moveToRouteActive ? 'Cannot move order here' : 'Depot Location'}
+                Depot Location
               </div>
             </InfoWindow>
           )}
@@ -462,7 +454,7 @@ export function MapView({
       </APIProvider>
 
       {/* Order Tooltip */}
-      {selectedOrder && tooltipPosition && !moveToRouteActive && (
+      {selectedOrder && tooltipPosition && (
         <OrderTooltip
           order={selectedOrder.order}
           trip={selectedOrder.trip}
@@ -473,18 +465,6 @@ export function MapView({
           }}
           onMoveToRoute={onMoveToRoute}
         />
-      )}
-
-      {/* Move to Route Instruction */}
-      {moveToRouteActive && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg">
-          <div className="text-sm font-medium">
-            Select a pin from another trip to move the order
-          </div>
-          <div className="text-xs text-gray-300 mt-1">
-            Press <kbd className="px-1.5 py-0.5 bg-gray-700 rounded">Esc</kbd> to cancel
-          </div>
-        </div>
       )}
 
       {/* Custom Zoom Controls */}
