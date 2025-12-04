@@ -10,6 +10,7 @@ import { MapView } from '@/components/MapView';
 import { Sidebar } from '@/components/Sidebar';
 import { Toast } from '@/components/Toast';
 import { MoveOrderModal } from '@/components/MoveOrderModal';
+import { ConfirmDiscardModal } from '@/components/ConfirmDiscardModal';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import ChevronLeftOutlined from '@mui/icons-material/ChevronLeftOutlined';
 import ChevronRightOutlined from '@mui/icons-material/ChevronRightOutlined';
@@ -43,6 +44,7 @@ export default function TripManagementPage() {
     targetTrip: Trip;
   } | null>(null);
   const [isApprovingTrips, setIsApprovingTrips] = useState(false);
+  const [showDiscardModal, setShowDiscardModal] = useState(false);
 
   // Filter trips based on search query (outlet name, order ID, or trip ID)
   const filteredTrips = trips.map(trip => {
@@ -252,7 +254,7 @@ export default function TripManagementPage() {
         <header className="border-b border-gray-200 bg-white px-4 py-4">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => router.push('/shipments?tab=orders')}
+            onClick={() => setShowDiscardModal(true)}
             className="rounded-md p-1 hover:bg-gray-100"
             aria-label="Go back"
           >
@@ -276,7 +278,7 @@ export default function TripManagementPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                  className="rounded-md p-2 hover:bg-gray-100 border border-gray-300"
+                  className="w-10 h-10 flex items-center justify-center rounded-md hover:bg-gray-100 border border-gray-300"
                   title="Collapse sidebar"
                 >
                   <ChevronLeftOutlined sx={{ fontSize: 20, color: '#374151' }} />
@@ -351,8 +353,8 @@ export default function TripManagementPage() {
       <footer className="border-t border-gray-200 bg-white px-4 py-4">
         <div className="flex items-center justify-end gap-2">
           <button
-            onClick={() => router.push('/shipments?tab=orders')}
-            className="rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
+            onClick={() => setShowDiscardModal(true)}
+            className="rounded-md border border-gray-300 bg-white px-3 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
           >
             <ArrowBackOutlined sx={{ fontSize: 16 }} />
             Back to Orders
@@ -360,7 +362,7 @@ export default function TripManagementPage() {
           <button
             onClick={handleApproveTrips}
             disabled={isApprovingTrips}
-            className="rounded-md bg-gray-900 px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="rounded-md bg-gray-900 px-3 py-3 text-sm font-semibold text-white hover:bg-gray-800 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isApprovingTrips ? (
               <>
@@ -400,6 +402,16 @@ export default function TripManagementPage() {
         isVisible={toast.show}
         onClose={() => setToast({ ...toast, show: false })}
         onUndo={toast.onUndo}
+      />
+
+      {/* Discard Confirmation Modal */}
+      <ConfirmDiscardModal
+        isOpen={showDiscardModal}
+        onClose={() => setShowDiscardModal(false)}
+        onConfirm={() => {
+          setShowDiscardModal(false);
+          router.push('/shipments?tab=orders');
+        }}
       />
       </div>
     </div>
