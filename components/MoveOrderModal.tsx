@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
-import CancelOutlined from '@mui/icons-material/CancelOutlined';
+import CloseRounded from '@mui/icons-material/CloseRounded';
 import WarningAmberOutlined from '@mui/icons-material/WarningAmberOutlined';
 import CheckOutlined from '@mui/icons-material/CheckOutlined';
 import ArrowForwardOutlined from '@mui/icons-material/ArrowForwardOutlined';
@@ -184,10 +184,13 @@ export function MoveOrderModal({
             </h2>
             <button
               onClick={handleClose}
-              className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded transition-colors"
+              style={{ backgroundColor: 'white' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5F5F5'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
               aria-label="Close modal"
             >
-              <CancelOutlined sx={{ fontSize: 24, color: '#9CA3AF' }} />
+              <CloseRounded sx={{ fontSize: 24, color: '#252525' }} />
             </button>
           </div>
         </div>
@@ -279,12 +282,6 @@ export function MoveOrderModal({
                         <span>•</span>
                         <span>{trip.capacityUsage}% Capacity</span>
                       </div>
-                      <div className="text-xs leading-4 mt-1" style={{ color: '#808080' }}>
-                        {availableCapacity > 0
-                          ? `${availableCapacity} cubes available`
-                          : `${Math.abs(availableCapacity)} cubes over capacity`
-                        }
-                      </div>
                     </div>
 
                     {/* Checkmark */}
@@ -299,7 +296,7 @@ export function MoveOrderModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 flex items-center justify-between gap-3" style={{ borderTop: '1px solid #E3E3E3' }}>
+        <div className="p-4 flex items-center justify-end gap-2" style={{ borderTop: '1px solid #E3E3E3' }}>
           <button
             onClick={handleClose}
             className="px-4 py-3 rounded-[10px] font-semibold text-sm leading-4 transition-colors"
