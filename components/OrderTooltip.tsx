@@ -1,7 +1,7 @@
 'use client';
 
 import { Order, Trip } from '@/types';
-import { X } from 'lucide-react';
+import CloseRounded from '@mui/icons-material/CloseRounded';
 import { useEffect, useRef, useState } from 'react';
 
 interface OrderTooltipProps {
@@ -30,26 +30,31 @@ export function OrderTooltip({
     const tooltipHeight = tooltip.offsetHeight || 220;
     const gap = 10; // Gap between pin and tooltip
 
-    // Center the tooltip horizontally with the pin
+    // Default position: centered above pin
     let left = position.x - tooltipWidth / 2;
     let top = position.y - tooltipHeight - gap;
 
-    // Track original pin x position for caret alignment
-    const pinX = position.x;
+    // Store original left position for maximum shift constraint
+    const originalLeft = left;
 
-    // Ensure tooltip doesn't go off left edge
-    if (left < 10) {
-      left = 10;
+    // Gentler boundary constraints with maximum shift limit
+    const maxShift = 50; // Maximum pixels to shift from centered position
+    const minEdgeGap = 5; // Smaller minimum edge distance
+
+    // Left edge constraint with shift limit
+    if (left < minEdgeGap) {
+      left = Math.max(minEdgeGap, originalLeft - maxShift);
     }
 
-    // Ensure tooltip doesn't go off right edge
-    if (left + tooltipWidth > window.innerWidth - 10) {
-      left = window.innerWidth - tooltipWidth - 10;
+    // Right edge constraint with shift limit
+    if (left + tooltipWidth > window.innerWidth - minEdgeGap) {
+      const idealLeft = window.innerWidth - tooltipWidth - minEdgeGap;
+      left = Math.min(idealLeft, originalLeft + maxShift);
     }
 
-    // Ensure tooltip doesn't go off top edge
-    if (top < 10) {
-      top = 10;
+    // Top edge constraint
+    if (top < minEdgeGap) {
+      top = minEdgeGap;
     }
 
     setCalculatedPosition({ left, top });
@@ -81,10 +86,13 @@ export function OrderTooltip({
         <h3 className="font-semibold text-gray-900">Order {order.id}</h3>
         <button
           onClick={onClose}
-          className="rounded-md p-1 hover:bg-gray-100"
+          className="w-9 h-9 flex items-center justify-center rounded transition-colors"
+          style={{ backgroundColor: 'white' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5F5F5'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
           aria-label="Close"
         >
-          <X className="h-5 w-5 text-gray-500" />
+          <CloseRounded sx={{ fontSize: 24, color: '#252525' }} />
         </button>
       </div>
 
@@ -96,7 +104,7 @@ export function OrderTooltip({
             <div className="text-xs font-medium text-gray-600 uppercase">Trip Number</div>
             <div className="flex items-center gap-2 mt-1">
               <div
-                className="h-3 w-3 rounded-full"
+                className="h-3 w-3 rounded"
                 style={{ backgroundColor: trip.color }}
               />
               <div className="font-semibold text-sm text-gray-900">{trip.tripNumber}</div>
