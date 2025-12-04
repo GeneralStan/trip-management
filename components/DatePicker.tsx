@@ -528,7 +528,7 @@ export default function DatePicker({ startDate, endDate, onSelectDateRange, onCl
           </div>
 
           {/* Footer with days selected and buttons */}
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
+          <div className="flex items-center justify-between px-4 py-4 border-t border-gray-200">
             <div className="text-sm" style={{ color: '#252525' }}>
               {tempStartDate && tempEndDate && daysSelected > 0 ? (
                 `${daysSelected} day${daysSelected !== 1 ? 's' : ''} selected`

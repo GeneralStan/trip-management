@@ -17,7 +17,7 @@ export function TripCard({ trip, onOrderClick }: TripCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <div className="rounded-lg border border-gray-200 shadow-sm" style={{ backgroundColor: '#F9FAFB' }}>
+    <div className="rounded-lg border border-gray-200 hover:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-shadow" style={{ backgroundColor: '#F9FAFB' }}>
       {/* Accordion Header */}
       <div className="border-b border-gray-200 p-4" style={{ backgroundColor: '#F9FAFB' }}>
         <div className="flex items-center justify-between">
