@@ -531,7 +531,9 @@ export default function DatePicker({ startDate, endDate, onSelectDateRange, onCl
           <div className="flex items-center justify-between px-4 py-4 border-t border-gray-200">
             <div className="text-sm" style={{ color: '#252525' }}>
               {tempStartDate && tempEndDate && daysSelected > 0 ? (
-                `${daysSelected} day${daysSelected !== 1 ? 's' : ''} selected`
+                <>
+                  <span className="font-semibold">{daysSelected}</span> day{daysSelected !== 1 ? 's' : ''} selected
+                </>
               ) : (
                 <span>&nbsp;</span>
               )}
