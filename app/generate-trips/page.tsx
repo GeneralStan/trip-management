@@ -297,7 +297,7 @@ export default function TripManagementPage() {
                   placeholder="Search outlet, order ID or Trip ID"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-md border py-2 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
+                  className="w-full rounded-md border py-2.5 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
                   style={{ backgroundColor: '#FAFAFA', borderColor: '#E3E3E3' }}
                 />
               </div>
@@ -308,7 +308,7 @@ export default function TripManagementPage() {
                   // TODO: Implement add orders functionality
                   console.log('Add orders to existing trips');
                 }}
-                className="px-4 py-2 text-sm font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 flex items-center gap-2 whitespace-nowrap"
+                className="px-4 py-2.5 text-sm font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 flex items-center gap-2 whitespace-nowrap"
               >
                 <AddOutlined sx={{ fontSize: 16 }} />
                 Add Orders
@@ -370,7 +370,7 @@ export default function TripManagementPage() {
         <div className="flex items-center justify-end gap-2">
           <button
             onClick={() => setShowDiscardModal(true)}
-            className="rounded-md border border-gray-300 bg-white px-3 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
+            className="rounded-md border border-gray-300 bg-white px-3 py-3.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
           >
             <ArrowBackOutlined sx={{ fontSize: 16 }} />
             Back to Orders
@@ -378,7 +378,7 @@ export default function TripManagementPage() {
           <button
             onClick={handleApproveTrips}
             disabled={isApprovingTrips}
-            className="rounded-md bg-gray-900 px-3 py-3 text-sm font-semibold text-white hover:bg-gray-800 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="rounded-md bg-gray-900 px-3 py-3.5 text-sm font-semibold text-white hover:bg-gray-800 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isApprovingTrips ? (
               <>
