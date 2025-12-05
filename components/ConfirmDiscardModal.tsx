@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import WarningAmberOutlined from '@mui/icons-material/WarningAmberOutlined';
+import WarningRounded from '@mui/icons-material/WarningRounded';
 
 interface ConfirmDiscardModalProps {
   isOpen: boolean;
@@ -63,37 +63,44 @@ export function ConfirmDiscardModal({
     >
       <div
         ref={modalRef}
-        className="bg-white rounded-lg shadow-xl w-[400px] p-6"
+        className="bg-white rounded-lg shadow-xl"
+        style={{ width: '400px' }}
       >
-        {/* Header with Icon */}
-        <div className="flex items-start gap-3 mb-4">
-          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-            <WarningAmberOutlined sx={{ fontSize: 24, color: '#F59E0B' }} />
-          </div>
+        {/* Header Frame */}
+        <div className="p-6 flex items-start gap-3" style={{ borderBottom: '1px solid #E3E3E3' }}>
+          <WarningRounded sx={{ fontSize: 24, color: '#F59E0B' }} />
           <div className="flex-1">
             <h2
               id="confirm-dialog-title"
-              className="text-lg font-semibold text-gray-900"
+              className="text-lg font-semibold"
+              style={{ color: '#0D0D0D' }}
             >
               Hold On...
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Leaving this page will discard the generated trips. Do you want to proceed?
-            </p>
           </div>
         </div>
 
-        {/* Footer Buttons */}
-        <div className="flex items-center justify-end gap-3 mt-6">
+        {/* Content Frame */}
+        <div className="px-6 py-4">
+          <p className="text-sm" style={{ color: '#4D4D4D' }}>
+            Leaving this page will discard the generated trips. Do you want to proceed?
+          </p>
+        </div>
+
+        {/* Footer Frame */}
+        <div
+          className="px-6 py-4 flex items-center justify-end gap-3"
+          style={{ borderTop: '1px solid #E3E3E3' }}
+        >
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm transition-colors"
+            className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 font-medium text-sm transition-colors"
+            className="px-4 py-2 text-sm font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800"
           >
             Discard and go back
           </button>
