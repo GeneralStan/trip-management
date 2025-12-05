@@ -19,6 +19,7 @@ export interface Trip {
   totalOrders: number;
   totalVolume: number;
   capacityUsage: number; // percentage
+  isSelected?: boolean; // For UI state - indicates if trip card is selected
 }
 
 export interface MoveToRouteState {
