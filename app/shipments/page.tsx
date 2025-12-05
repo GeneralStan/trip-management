@@ -514,7 +514,7 @@ function ShipmentsContent() {
               {activeTab === 'summary' ? 'Summary' : activeTab === 'orders' ? 'Orders' : 'Trips'}
             </h2>
             <button
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               <FileDownloadOutlined sx={{ fontSize: 16, color: '#374151' }} />
               {activeTab === 'summary' ? 'Download Summary' : activeTab === 'orders' ? 'Download Orders' : 'Download Trips'}
@@ -696,14 +696,14 @@ function ShipmentsContent() {
                 placeholder="Search here"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-md border py-2 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
+                className="w-full rounded-md border py-2.5 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
                 style={{ backgroundColor: '#FAFAFA', borderColor: '#E3E3E3' }}
               />
             </div>
             <div className="relative" ref={datePickerRef}>
               <button
                 onClick={() => setShowDatePicker(!showDatePicker)}
-                className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                className="px-4 py-2.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
               >
                 <CalendarMonthRounded sx={{ fontSize: 16, color: '#374151' }} />
                 Delivery Date: {formatDateDisplay(deliveryDateStart, deliveryDateEnd)}
@@ -725,7 +725,7 @@ function ShipmentsContent() {
             <div className="relative" ref={moreFiltersDropdownRef}>
               <button
                 onClick={() => setShowMoreFiltersDropdown(!showMoreFiltersDropdown)}
-                className="px-4 py-2 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                className="px-4 py-2.5 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
                 style={{ color: '#252525' }}
               >
                 <FilterListOutlined sx={{ fontSize: 16, color: '#374151' }} />
@@ -782,7 +782,7 @@ function ShipmentsContent() {
               <div className="relative" ref={sortByDropdownRef}>
                 <button
                   onClick={() => setShowSortByDropdown(!showSortByDropdown)}
-                  className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                  className="px-4 py-2.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
                 >
                   Sort By: {sortByOption}
                   <ArrowDownwardOutlined sx={{ fontSize: 16, color: '#374151', transform: sortByOrder === 'asc' ? 'rotate(180deg)' : 'none' }} />
@@ -802,7 +802,7 @@ function ShipmentsContent() {
               <div className="relative" ref={tripsSortByDropdownRef}>
                 <button
                   onClick={() => setShowTripsSortByDropdown(!showTripsSortByDropdown)}
-                  className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                  className="px-4 py-2.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
                 >
                   Sort By: {tripsSortByOption}
                   <ArrowDownwardOutlined sx={{ fontSize: 16, color: '#374151', transform: tripsSortByOrder === 'asc' ? 'rotate(180deg)' : 'none' }} />
@@ -824,7 +824,7 @@ function ShipmentsContent() {
               <button
                 onClick={handleGenerateTrips}
                 disabled={selectedOrders.size === 0}
-                className="rounded-md bg-gray-900 px-3 py-3 text-sm font-semibold text-white hover:bg-gray-800 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="rounded-md bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 <NorthEastOutlined sx={{ fontSize: 20, color: 'white' }} />
                 Generate Trips
@@ -832,7 +832,7 @@ function ShipmentsContent() {
             ) : (
               <button
                 disabled={selectedTrips.size === 0}
-                className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <NorthEastOutlined sx={{ fontSize: 16, color: '#374151' }} />
                 Dispatch Trips
@@ -885,14 +885,14 @@ function ShipmentsContent() {
                       placeholder="Search delivery type"
                       value={summarySearchQuery}
                       onChange={(e) => setSummarySearchQuery(e.target.value)}
-                      className="w-full rounded-md border py-2 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
+                      className="w-full rounded-md border py-2.5 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
                       style={{ backgroundColor: '#FAFAFA', borderColor: '#E3E3E3' }}
                     />
                   </div>
                   <div className="relative" ref={summaryDatePickerRef}>
                     <button
                       onClick={() => setShowSummaryDatePicker(!showSummaryDatePicker)}
-                      className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                      className="px-4 py-2.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
                     >
                       <CalendarMonthRounded sx={{ fontSize: 16, color: '#374151' }} />
                       Delivery Date: {formatDateDisplay(deliveryDateStart, deliveryDateEnd)}
@@ -1163,7 +1163,7 @@ function ShipmentsContent() {
             </div>
             <div className="flex items-center" style={{ gap: '8px' }}>
               <select
-                className="px-2 py-2 text-sm font-semibold bg-white focus:outline-none appearance-none"
+                className="px-2 py-1.5 text-sm font-semibold bg-white focus:outline-none appearance-none"
                 style={{
                   border: '1px solid #E3E3E3',
                   borderRadius: '5px',
