@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, Suspense, useRef } from 'react';
+import { useState, useEffect, Suspense, useRef, useMemo } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { Toast } from '@/components/Toast';
 import DatePicker from '@/components/DatePicker';
-import DeliveryTypeDropdown from '@/components/DeliveryTypeDropdown';
+import MoreFiltersDropdown from '@/components/MoreFiltersDropdown';
 import SortByDropdown from '@/components/SortByDropdown';
 import TripsSortByDropdown from '@/components/TripsSortByDropdown';
 import { ShipmentOrder, ShipmentTrip, OrderFilterTab, TripFilterTab } from '@/types/shipment';
@@ -18,6 +18,7 @@ import FilterListOutlined from '@mui/icons-material/FilterListOutlined';
 import ArrowDownwardOutlined from '@mui/icons-material/ArrowDownwardOutlined';
 import MoreVertOutlined from '@mui/icons-material/MoreVertOutlined';
 import CalendarMonthRounded from '@mui/icons-material/CalendarMonthRounded';
+import ExpandMoreOutlined from '@mui/icons-material/ExpandMoreOutlined';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 function ShipmentsContent() {
@@ -36,10 +37,25 @@ function ShipmentsContent() {
   // Delivery Type filter state
   const [deliveryTypeFilter, setDeliveryTypeFilter] = useState<string>('CORE');
 
+  // Dispatcher filter state
+  const [dispatcherFilters, setDispatcherFilters] = useState<string[]>([]);
+
+  // More Filters dropdown state
+  const [showMoreFiltersDropdown, setShowMoreFiltersDropdown] = useState(false);
+
+  // Extract unique dispatchers from mock data
+  const availableDispatchers = useMemo(() => {
+    const dispatchers = new Set<string>();
+    mockOrders.forEach(order => dispatchers.add(order.driver));
+    mockTrips.forEach(trip => dispatchers.add(trip.driver));
+    return Array.from(dispatchers).sort();
+  }, []);
+
   // Set active tab and delivery type filter based on query parameters
   useEffect(() => {
     const tabParam = searchParams.get('tab');
     const deliveryTypeParam = searchParams.get('deliveryType');
+    const dispatchersParam = searchParams.get('dispatchers');
 
     if (tabParam === 'trips') {
       setActiveTab('trips');
@@ -54,6 +70,10 @@ function ShipmentsContent() {
 
     if (deliveryTypeParam) {
       setDeliveryTypeFilter(deliveryTypeParam);
+    }
+
+    if (dispatchersParam) {
+      setDispatcherFilters(dispatchersParam.split(',').filter(d => d.trim()));
     }
   }, [searchParams]);
 
@@ -97,9 +117,8 @@ function ShipmentsContent() {
   const datePickerRef = useRef<HTMLDivElement>(null);
   const summaryDatePickerRef = useRef<HTMLDivElement>(null);
 
-  // Delivery type dropdown state
-  const [showDeliveryTypeDropdown, setShowDeliveryTypeDropdown] = useState(false);
-  const deliveryTypeDropdownRef = useRef<HTMLDivElement>(null);
+  // More Filters dropdown ref
+  const moreFiltersDropdownRef = useRef<HTMLDivElement>(null);
 
   // Sort by dropdown state for Orders
   const [sortByOption, setSortByOption] = useState('Volume');
@@ -186,8 +205,8 @@ function ShipmentsContent() {
       if (summaryDatePickerRef.current && !summaryDatePickerRef.current.contains(event.target as Node)) {
         setShowSummaryDatePicker(false);
       }
-      if (deliveryTypeDropdownRef.current && !deliveryTypeDropdownRef.current.contains(event.target as Node)) {
-        setShowDeliveryTypeDropdown(false);
+      if (moreFiltersDropdownRef.current && !moreFiltersDropdownRef.current.contains(event.target as Node)) {
+        setShowMoreFiltersDropdown(false);
       }
       if (sortByDropdownRef.current && !sortByDropdownRef.current.contains(event.target as Node)) {
         setShowSortByDropdown(false);
@@ -211,6 +230,10 @@ function ShipmentsContent() {
   }).filter((order) => {
     // Apply delivery type filter
     return order.deliveryType === deliveryTypeFilter;
+  }).filter((order) => {
+    // Apply dispatcher filter (OR logic)
+    if (dispatcherFilters.length === 0) return true;
+    return dispatcherFilters.includes(order.driver);
   }).filter((order) => {
     if (!searchQuery.trim()) return true;
     const searchLower = searchQuery.toLowerCase();
@@ -252,6 +275,10 @@ function ShipmentsContent() {
   }).filter((trip) => {
     // Apply delivery type filter
     return trip.deliveryType === deliveryTypeFilter;
+  }).filter((trip) => {
+    // Apply dispatcher filter (OR logic)
+    if (dispatcherFilters.length === 0) return true;
+    return dispatcherFilters.includes(trip.driver);
   }).filter((trip) => {
     if (!searchQuery.trim()) return true;
     const searchLower = searchQuery.toLowerCase();
@@ -695,22 +722,43 @@ function ShipmentsContent() {
                 </div>
               )}
             </div>
-            <div className="relative" ref={deliveryTypeDropdownRef}>
+            <div className="relative" ref={moreFiltersDropdownRef}>
               <button
-                onClick={() => setShowDeliveryTypeDropdown(!showDeliveryTypeDropdown)}
+                onClick={() => setShowMoreFiltersDropdown(!showMoreFiltersDropdown)}
                 className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
               >
                 <FilterListOutlined sx={{ fontSize: 16, color: '#374151' }} />
-                Delivery Type: {deliveryTypeFilter}
+                More Filters{dispatcherFilters.length > 0 && ` (${dispatcherFilters.length})`}
+                <ExpandMoreOutlined
+                  sx={{
+                    fontSize: 16,
+                    color: '#374151',
+                    transform: showMoreFiltersDropdown ? 'rotate(180deg)' : 'none',
+                    transition: 'transform 0.2s'
+                  }}
+                />
               </button>
-              {showDeliveryTypeDropdown && (
+              {showMoreFiltersDropdown && (
                 <div className="absolute top-full mt-2 z-50">
-                  <DeliveryTypeDropdown
-                    selectedType={deliveryTypeFilter}
-                    onSelectType={(type) => {
-                      setDeliveryTypeFilter(type);
-                      setShowDeliveryTypeDropdown(false);
+                  <MoreFiltersDropdown
+                    isOpen={showMoreFiltersDropdown}
+                    onClose={() => setShowMoreFiltersDropdown(false)}
+                    appliedFilters={{
+                      deliveryType: deliveryTypeFilter,
+                      dispatchers: dispatcherFilters,
                     }}
+                    onApplyFilters={(filters) => {
+                      setDeliveryTypeFilter(filters.deliveryType);
+                      setDispatcherFilters(filters.dispatchers);
+                      setShowMoreFiltersDropdown(false);
+                      // Clear row selections when filter changes
+                      setSelectedOrders(new Set());
+                      setSelectedTrips(new Set());
+                    }}
+                    availableDispatchers={availableDispatchers}
+                    orderFilterTab={orderFilterTab}
+                    tripFilterTab={tripFilterTab}
+                    currentTab={activeTab as 'orders' | 'trips'}
                   />
                 </div>
               )}
