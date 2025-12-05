@@ -725,10 +725,25 @@ function ShipmentsContent() {
             <div className="relative" ref={moreFiltersDropdownRef}>
               <button
                 onClick={() => setShowMoreFiltersDropdown(!showMoreFiltersDropdown)}
-                className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                className="px-4 py-2 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                style={{ color: '#252525' }}
               >
                 <FilterListOutlined sx={{ fontSize: 16, color: '#374151' }} />
-                More Filters{dispatcherFilters.length > 0 && ` (${dispatcherFilters.length})`}
+                <span>More Filters</span>
+                {dispatcherFilters.length > 0 && (
+                  <span
+                    className="inline-flex items-center justify-center rounded-full text-xs font-medium"
+                    style={{
+                      backgroundColor: '#3B82F6',
+                      color: '#FFFFFF',
+                      minWidth: '20px',
+                      height: '20px',
+                      padding: '0 6px'
+                    }}
+                  >
+                    {dispatcherFilters.length}
+                  </span>
+                )}
                 <ExpandMoreOutlined
                   sx={{
                     fontSize: 16,
@@ -809,9 +824,9 @@ function ShipmentsContent() {
               <button
                 onClick={handleGenerateTrips}
                 disabled={selectedOrders.size === 0}
-                className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-md bg-gray-900 px-3 py-3 text-sm font-semibold text-white hover:bg-gray-800 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <NorthEastOutlined sx={{ fontSize: 16, color: '#374151' }} />
+                <NorthEastOutlined sx={{ fontSize: 20, color: 'white' }} />
                 Generate Trips
               </button>
             ) : (
@@ -984,7 +999,7 @@ function ShipmentsContent() {
                         </div>
                       </th>
                       <th className="px-3 py-2.5 text-left text-sm font-semibold" style={{ height: '52px', color: '#252525', backgroundColor: '#EFEFEF' }}>String ID</th>
-                      <th className="px-3 py-2.5 text-left text-sm font-semibold" style={{ height: '52px', color: '#252525', backgroundColor: '#EFEFEF' }}>Driver</th>
+                      <th className="px-3 py-2.5 text-left text-sm font-semibold" style={{ height: '52px', color: '#252525', backgroundColor: '#EFEFEF' }}>Dispatcher</th>
                       <th className="px-3 py-2.5 text-left text-sm font-semibold" style={{ height: '52px', color: '#252525', backgroundColor: '#EFEFEF' }}>Orders</th>
                       <th className="px-3 py-2.5 text-left text-sm font-semibold" style={{ height: '52px', color: '#252525', backgroundColor: '#EFEFEF' }}>Outlets</th>
                       <th className="px-3 py-2.5 text-left text-sm font-semibold" style={{ height: '52px', color: '#252525', backgroundColor: '#EFEFEF' }}>Volume (Cubes)</th>

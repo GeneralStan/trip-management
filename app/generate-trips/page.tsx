@@ -16,6 +16,7 @@ import ChevronLeftOutlined from '@mui/icons-material/ChevronLeftOutlined';
 import ChevronRightOutlined from '@mui/icons-material/ChevronRightOutlined';
 import ArrowBackOutlined from '@mui/icons-material/ArrowBackOutlined';
 import CheckOutlined from '@mui/icons-material/CheckOutlined';
+import AddOutlined from '@mui/icons-material/AddOutlined';
 
 export default function TripManagementPage() {
   const router = useRouter();
@@ -286,17 +287,32 @@ export default function TripManagementPage() {
               </div>
             </div>
 
-            {/* Search */}
-            <div className="relative mt-4">
-              <SearchOutlined sx={{ fontSize: 16, color: '#9CA3AF', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                type="text"
-                placeholder="Search outlet, order ID or Trip ID"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-md border py-2 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
-                style={{ backgroundColor: '#FAFAFA', borderColor: '#E3E3E3' }}
-              />
+            {/* Search and Add Orders */}
+            <div className="flex items-center gap-3 mt-4">
+              {/* Search Bar - Fixed Width */}
+              <div className="relative" style={{ width: '249px' }}>
+                <SearchOutlined sx={{ fontSize: 16, color: '#9CA3AF', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                <input
+                  type="text"
+                  placeholder="Search outlet, order ID or Trip ID"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-md border py-2 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
+                  style={{ backgroundColor: '#FAFAFA', borderColor: '#E3E3E3' }}
+                />
+              </div>
+
+              {/* Add Orders Button */}
+              <button
+                onClick={() => {
+                  // TODO: Implement add orders functionality
+                  console.log('Add orders to existing trips');
+                }}
+                className="px-4 py-2 text-sm font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 flex items-center gap-2 whitespace-nowrap"
+              >
+                <AddOutlined sx={{ fontSize: 16 }} />
+                Add Orders
+              </button>
             </div>
           </div>
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import CloseRounded from '@mui/icons-material/CloseRounded';
-import WarningAmberOutlined from '@mui/icons-material/WarningAmberOutlined';
+import WarningRounded from '@mui/icons-material/WarningRounded';
 import CheckOutlined from '@mui/icons-material/CheckOutlined';
 import ArrowForwardOutlined from '@mui/icons-material/ArrowForwardOutlined';
 import type { Order, Trip } from '@/types';
@@ -201,7 +201,7 @@ export function MoveOrderModal({
           {capacityWarning?.show && (
             <div className="mb-6 flex items-start gap-4 rounded-[10px]" style={{ backgroundColor: '#FFF8EB', border: '1px solid #FB8500', padding: '12px 16px' }}>
               <div className="flex items-start py-1">
-                <WarningAmberOutlined sx={{ fontSize: 20, color: '#FB8500' }} />
+                <WarningRounded sx={{ fontSize: 20, color: '#FB8500' }} />
               </div>
               <div className="flex-1">
                 <div className="font-semibold text-base leading-6" style={{ color: '#0D0D0D' }}>

@@ -78,13 +78,13 @@ export default function SortByDropdown({
           <NorthOutlined
             sx={{
               fontSize: 16,
-              color: selectedOrder === 'asc' ? '#3B82F6' : '#6B7280',
+              color: '#000000',
             }}
           />
           <span
             className="text-sm font-normal"
             style={{
-              color: selectedOrder === 'asc' ? '#3B82F6' : '#252525',
+              color: '#000000',
             }}
           >
             Low - High
@@ -102,13 +102,13 @@ export default function SortByDropdown({
           <SouthOutlined
             sx={{
               fontSize: 16,
-              color: selectedOrder === 'desc' ? '#3B82F6' : '#6B7280',
+              color: '#000000',
             }}
           />
           <span
             className="text-sm font-normal"
             style={{
-              color: selectedOrder === 'desc' ? '#3B82F6' : '#252525',
+              color: '#000000',
             }}
           >
             High - Low

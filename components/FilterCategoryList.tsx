@@ -29,6 +29,7 @@ export default function FilterCategoryList({
         className="flex items-center justify-between px-4 py-4 text-left transition-colors"
         style={{
           backgroundColor: activeCategory === 'deliveryType' ? '#E0F2FE' : 'transparent',
+          border: activeCategory === 'deliveryType' ? '1px solid #3B82F6' : '1px solid transparent',
         }}
         onMouseEnter={(e) => {
           if (activeCategory !== 'deliveryType') {
@@ -68,6 +69,7 @@ export default function FilterCategoryList({
         className="flex items-center justify-between px-4 py-4 text-left transition-colors"
         style={{
           backgroundColor: activeCategory === 'dispatcher' ? '#E0F2FE' : 'transparent',
+          border: activeCategory === 'dispatcher' ? '1px solid #3B82F6' : '1px solid transparent',
         }}
         onMouseEnter={(e) => {
           if (activeCategory !== 'dispatcher') {
