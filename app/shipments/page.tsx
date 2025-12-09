@@ -9,6 +9,7 @@ import SortByDropdown from '@/components/SortByDropdown';
 import TripsSortByDropdown from '@/components/TripsSortByDropdown';
 import { ShipmentOrder, ShipmentTrip, OrderFilterTab, TripFilterTab } from '@/types/shipment';
 import { mockOrders, mockTrips } from '@/lib/mockShipments';
+import { extractStringIdsFromOrders } from '@/lib/tripGeneration';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import FileDownloadOutlined from '@mui/icons-material/FileDownloadOutlined';
 import NorthEastOutlined from '@mui/icons-material/NorthEastOutlined';
@@ -429,6 +430,19 @@ function ShipmentsContent() {
   };
 
   const handleGenerateTrips = () => {
+    // Extract unique String IDs from selected orders
+    const stringIds = extractStringIdsFromOrders(mockOrders, selectedOrders);
+
+    // Get delivery type from first selected order
+    const firstSelectedOrder = mockOrders.find(o => selectedOrders.has(o.id));
+    const deliveryType = firstSelectedOrder?.deliveryType || 'CORE';
+
+    // Store in session storage for generate-trips page
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('selectedStringIds', JSON.stringify(stringIds));
+      sessionStorage.setItem('tripDeliveryType', deliveryType);
+    }
+
     // Navigate to Generate Trips screen
     router.push('/generate-trips');
   };

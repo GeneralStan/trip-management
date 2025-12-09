@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Trip, Order } from '@/types';
 import { mockTrips, MAP_CENTER, DEPOT } from '@/lib/mockData';
 import { calculateCapacityUsage } from '@/lib/utils';
+import { generateTripsFromStringIds } from '@/lib/tripGeneration';
 import { TripCard } from '@/components/TripCard';
 import { MapView } from '@/components/MapView';
 import { Sidebar } from '@/components/Sidebar';
@@ -22,10 +23,11 @@ import ExpandMoreOutlined from '@mui/icons-material/ExpandMoreOutlined';
 
 export default function TripManagementPage() {
   const router = useRouter();
-  const [trips, setTrips] = useState<Trip[]>(mockTrips);
+  const [trips, setTrips] = useState<Trip[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<{ order: Order; trip: Trip } | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
   const [orderToMove, setOrderToMove] = useState<{
     order: Order;
@@ -58,6 +60,41 @@ export default function TripManagementPage() {
     stringIds: [],
     tripNumbers: [],
   });
+
+  // Generate trips on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const selectedStringIdsJson = sessionStorage.getItem('selectedStringIds');
+      const deliveryType = sessionStorage.getItem('tripDeliveryType') as 'CORE' | 'JARS' | 'KEGS' | 'MECHA' || 'CORE';
+
+      if (selectedStringIdsJson) {
+        try {
+          const stringIds = JSON.parse(selectedStringIdsJson) as string[];
+
+          if (stringIds.length > 0) {
+            // Generate trips based on String IDs
+            const generatedTrips = generateTripsFromStringIds(stringIds, deliveryType);
+            setTrips(generatedTrips);
+          } else {
+            // No String IDs, use mock trips as fallback
+            setTrips(mockTrips);
+          }
+
+          // Clear session storage
+          sessionStorage.removeItem('selectedStringIds');
+          sessionStorage.removeItem('tripDeliveryType');
+        } catch (error) {
+          console.error('Error parsing String IDs:', error);
+          setTrips(mockTrips);
+        }
+      } else {
+        // No session data, use mock trips
+        setTrips(mockTrips);
+      }
+
+      setIsLoading(false);
+    }
+  }, []);
 
   // Extract unique String IDs from trips (first 3 digits of trip ID)
   const availableStringIds = useMemo(() => {
@@ -289,6 +326,21 @@ export default function TripManagementPage() {
   };
 
   const deliveryType = trips[0]?.deliveryType || 'CORE';
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-screen bg-gray-50">
+        <Sidebar activeItem="trips" />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4"></div>
+            <p className="text-gray-600">Generating trips...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-screen bg-gray-50">
