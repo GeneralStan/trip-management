@@ -13,6 +13,7 @@ import { Toast } from '@/components/Toast';
 import { MoveOrderModal } from '@/components/MoveOrderModal';
 import { ConfirmDiscardModal } from '@/components/ConfirmDiscardModal';
 import GenerateTripsFiltersDropdown from '@/components/GenerateTripsFiltersDropdown';
+import Portal from '@/components/Portal';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import ChevronLeftOutlined from '@mui/icons-material/ChevronLeftOutlined';
 import ChevronRightOutlined from '@mui/icons-material/ChevronRightOutlined';
@@ -60,6 +61,8 @@ export default function TripManagementPage() {
     stringIds: [],
     tripNumbers: [],
   });
+  const [moreFiltersButtonRef, setMoreFiltersButtonRef] = useState<HTMLButtonElement | null>(null);
+  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
 
   // Generate trips on component mount
   useEffect(() => {
@@ -95,6 +98,22 @@ export default function TripManagementPage() {
       setIsLoading(false);
     }
   }, []);
+
+  // Update button rect when dropdown opens or window resizes
+  useEffect(() => {
+    if (showMoreFiltersDropdown && moreFiltersButtonRef) {
+      setButtonRect(moreFiltersButtonRef.getBoundingClientRect());
+    }
+
+    const handleResize = () => {
+      if (showMoreFiltersDropdown && moreFiltersButtonRef) {
+        setButtonRect(moreFiltersButtonRef.getBoundingClientRect());
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [showMoreFiltersDropdown, moreFiltersButtonRef]);
 
   // Extract unique String IDs from trips (first 3 digits of trip ID)
   const availableStringIds = useMemo(() => {
@@ -401,8 +420,9 @@ export default function TripManagementPage() {
               </div>
 
               {/* More Filters Button */}
-              <div className="relative">
+              <div>
                 <button
+                  ref={setMoreFiltersButtonRef}
                   onClick={() => setShowMoreFiltersDropdown(!showMoreFiltersDropdown)}
                   className="px-4 py-2.5 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap"
                   style={{ color: '#252525' }}
@@ -419,7 +439,7 @@ export default function TripManagementPage() {
                   />
                 </button>
                 {showMoreFiltersDropdown && (
-                  <div className="absolute top-full mt-2 z-[9999]">
+                  <Portal>
                     <GenerateTripsFiltersDropdown
                       isOpen={showMoreFiltersDropdown}
                       onClose={() => setShowMoreFiltersDropdown(false)}
@@ -430,8 +450,9 @@ export default function TripManagementPage() {
                       }}
                       availableStringIds={availableStringIds}
                       availableTrips={trips}
+                      buttonRect={buttonRect}
                     />
-                  </div>
+                  </Portal>
                 )}
               </div>
             </div>

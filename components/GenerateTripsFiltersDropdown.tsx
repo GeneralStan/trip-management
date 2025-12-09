@@ -13,6 +13,7 @@ interface GenerateTripsFiltersDropdownProps {
   onApplyFilters: (filters: { stringIds: string[]; tripNumbers: string[] }) => void;
   availableStringIds: string[];
   availableTrips: Trip[];
+  buttonRect: DOMRect | null;
 }
 
 type FilterCategory = 'string' | 'tripNumber';
@@ -24,6 +25,7 @@ export default function GenerateTripsFiltersDropdown({
   onApplyFilters,
   availableStringIds,
   availableTrips,
+  buttonRect,
 }: GenerateTripsFiltersDropdownProps) {
   const [pendingFilters, setPendingFilters] = useState(appliedFilters);
   const [activeCategory, setActiveCategory] = useState<FilterCategory>('string');
@@ -31,6 +33,18 @@ export default function GenerateTripsFiltersDropdown({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const tripNumberOptions = ['Trip 1', 'Trip 2', 'Trip 3'];
+
+  // Calculate dropdown position based on button location
+  const getDropdownPosition = () => {
+    if (!buttonRect) return { top: 0, left: 0 };
+
+    return {
+      top: buttonRect.bottom + 8, // 8px gap (mt-2)
+      left: buttonRect.left,
+    };
+  };
+
+  const position = getDropdownPosition();
 
   // Copy applied → pending when dropdown opens
   useEffect(() => {
@@ -138,13 +152,16 @@ export default function GenerateTripsFiltersDropdown({
   return (
     <div
       ref={dropdownRef}
-      className="bg-white rounded-lg shadow-xl"
+      className="bg-white rounded-lg shadow-xl fixed"
       style={{
         width: '480px',
         height: '360px',
         border: '1px solid #E3E3E3',
         display: 'flex',
         flexDirection: 'column',
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        zIndex: 9999,
       }}
     >
       {/* Two-column layout */}
