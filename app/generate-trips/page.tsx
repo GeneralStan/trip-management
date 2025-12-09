@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trip, Order } from '@/types';
 import { mockTrips, MAP_CENTER, DEPOT } from '@/lib/mockData';
@@ -11,12 +11,14 @@ import { Sidebar } from '@/components/Sidebar';
 import { Toast } from '@/components/Toast';
 import { MoveOrderModal } from '@/components/MoveOrderModal';
 import { ConfirmDiscardModal } from '@/components/ConfirmDiscardModal';
+import GenerateTripsFiltersDropdown from '@/components/GenerateTripsFiltersDropdown';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import ChevronLeftOutlined from '@mui/icons-material/ChevronLeftOutlined';
 import ChevronRightOutlined from '@mui/icons-material/ChevronRightOutlined';
 import ArrowBackOutlined from '@mui/icons-material/ArrowBackOutlined';
 import CheckOutlined from '@mui/icons-material/CheckOutlined';
-import AddOutlined from '@mui/icons-material/AddOutlined';
+import FilterListOutlined from '@mui/icons-material/FilterListOutlined';
+import ExpandMoreOutlined from '@mui/icons-material/ExpandMoreOutlined';
 
 export default function TripManagementPage() {
   const router = useRouter();
@@ -47,8 +49,52 @@ export default function TripManagementPage() {
   const [isApprovingTrips, setIsApprovingTrips] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
 
-  // Filter trips based on search query (outlet name, order ID, or trip ID)
-  const filteredTrips = trips.map(trip => {
+  // More Filters state
+  const [showMoreFiltersDropdown, setShowMoreFiltersDropdown] = useState(false);
+  const [filterState, setFilterState] = useState<{
+    stringIds: string[];
+    tripNumbers: string[];
+  }>({
+    stringIds: [],
+    tripNumbers: [],
+  });
+
+  // Extract unique String IDs from trips (first 3 digits of trip ID)
+  const availableStringIds = useMemo(() => {
+    const stringIds = new Set<string>();
+    trips.forEach(trip => {
+      const stringId = trip.tripNumber.substring(0, 3);
+      stringIds.add(stringId);
+    });
+    return Array.from(stringIds).sort();
+  }, [trips]);
+
+  // Filter trips based on filters and search query
+  const filteredTrips = trips.filter(trip => {
+    // Apply String ID filter
+    if (filterState.stringIds.length > 0) {
+      const stringId = trip.tripNumber.substring(0, 3);
+      if (!filterState.stringIds.includes(stringId)) {
+        return false;
+      }
+    }
+
+    // Apply Trip Number filter
+    if (filterState.tripNumbers.length > 0) {
+      const lastTwoDigits = trip.tripNumber.substring(3);
+      let tripNumber = '';
+      if (lastTwoDigits === '01') tripNumber = 'Trip 1';
+      else if (lastTwoDigits === '02') tripNumber = 'Trip 2';
+      else if (lastTwoDigits === '03') tripNumber = 'Trip 3';
+
+      if (!filterState.tripNumbers.includes(tripNumber)) {
+        return false;
+      }
+    }
+
+    return true;
+  }).map(trip => {
+    // Apply search query to trip and orders
     if (!searchQuery.trim()) return trip;
 
     const searchLower = searchQuery.toLowerCase();
@@ -287,7 +333,7 @@ export default function TripManagementPage() {
               </div>
             </div>
 
-            {/* Search and Add Orders */}
+            {/* Search and More Filters */}
             <div className="flex items-center gap-3 mt-4">
               {/* Search Bar - Fixed Width */}
               <div className="relative" style={{ width: '249px' }}>
@@ -302,17 +348,53 @@ export default function TripManagementPage() {
                 />
               </div>
 
-              {/* Add Orders Button */}
-              <button
-                onClick={() => {
-                  // TODO: Implement add orders functionality
-                  console.log('Add orders to existing trips');
-                }}
-                className="px-4 py-2.5 text-sm font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 flex items-center gap-2 whitespace-nowrap"
-              >
-                <AddOutlined sx={{ fontSize: 16 }} />
-                Add Orders
-              </button>
+              {/* More Filters Button */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowMoreFiltersDropdown(!showMoreFiltersDropdown)}
+                  className="px-4 py-2.5 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap"
+                  style={{ color: '#252525' }}
+                >
+                  <FilterListOutlined sx={{ fontSize: 16, color: '#374151' }} />
+                  <span>More Filters</span>
+                  {(filterState.stringIds.length > 0 || filterState.tripNumbers.length > 0) && (
+                    <span
+                      className="inline-flex items-center justify-center rounded-full text-xs font-medium"
+                      style={{
+                        backgroundColor: '#3B82F6',
+                        color: '#FFFFFF',
+                        minWidth: '20px',
+                        height: '20px',
+                        padding: '0 6px'
+                      }}
+                    >
+                      {filterState.stringIds.length + filterState.tripNumbers.length}
+                    </span>
+                  )}
+                  <ExpandMoreOutlined
+                    sx={{
+                      fontSize: 16,
+                      color: '#374151',
+                      transform: showMoreFiltersDropdown ? 'rotate(180deg)' : 'none',
+                      transition: 'transform 0.2s'
+                    }}
+                  />
+                </button>
+                {showMoreFiltersDropdown && (
+                  <div className="absolute top-full mt-2 z-50">
+                    <GenerateTripsFiltersDropdown
+                      isOpen={showMoreFiltersDropdown}
+                      onClose={() => setShowMoreFiltersDropdown(false)}
+                      appliedFilters={filterState}
+                      onApplyFilters={(filters) => {
+                        setFilterState(filters);
+                        setShowMoreFiltersDropdown(false);
+                      }}
+                      availableStringIds={availableStringIds}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
