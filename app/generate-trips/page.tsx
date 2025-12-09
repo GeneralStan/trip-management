@@ -73,12 +73,12 @@ export default function TripManagementPage() {
 
   const hasSearchResults = searchQuery.trim() ? filteredTrips.some(trip => trip.orders.length > 0) : true;
 
-  const handleOrderClick = (order: Order, trip: Trip) => {
+  const handleOrderClick = (order: Order, trip: Trip, shouldPan: boolean = false) => {
     // Handle both selection and deselection (null values)
     setSelectedOrder(order && trip ? { order, trip } : null);
 
-    // Only pan if we have a valid order with coordinates
-    if (order?.coordinates) {
+    // Only pan if explicitly requested (e.g., from sidebar clicks) and we have valid coordinates
+    if (shouldPan && order?.coordinates) {
       setPanToLocation({
         lat: order.coordinates[0],
         lng: order.coordinates[1],
