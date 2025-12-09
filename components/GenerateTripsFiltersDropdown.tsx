@@ -111,9 +111,9 @@ export default function GenerateTripsFiltersDropdown({
       }}
     >
       {/* Two-column layout */}
-      <div className="flex" style={{ height: '360px' }}>
+      <div className="flex flex-1">
         {/* Left column: Category list */}
-        <div className="border-r px-2" style={{ width: '200px', borderColor: '#E3E3E3', height: '360px' }}>
+        <div className="border-r p-4" style={{ width: '200px', borderColor: '#E3E3E3' }}>
           {/* String Filter Option */}
           <button
             onClick={() => setActiveCategory('string')}

@@ -149,7 +149,7 @@ export default function MoreFiltersDropdown({
       }}
     >
       {/* Two-column layout */}
-      <div className="flex" style={{ height: '360px' }}>
+      <div className="flex flex-1">
         {/* Left column: Category list */}
         <FilterCategoryList
           activeCategory={activeCategory}
