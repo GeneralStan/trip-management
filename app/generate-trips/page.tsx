@@ -366,7 +366,7 @@ export default function TripManagementPage() {
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className={`${isSidebarCollapsed ? 'w-0' : 'w-[530px]'} flex flex-col border-r border-gray-200 bg-white transition-all duration-300 relative z-[100]`}>
+        <aside className={`${isSidebarCollapsed ? 'w-0' : 'w-[530px]'} flex flex-col border-r border-gray-200 bg-white transition-all duration-300 overflow-hidden relative z-[100]`}>
           {/* Header */}
           <div className="border-b border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">

@@ -142,7 +142,7 @@ export default function MoreFiltersDropdown({
       className="bg-white rounded-lg shadow-xl"
       style={{
         width: '480px',
-        height: '480px',
+        height: '360px',
         border: '1px solid #E3E3E3',
         display: 'flex',
         flexDirection: 'column',

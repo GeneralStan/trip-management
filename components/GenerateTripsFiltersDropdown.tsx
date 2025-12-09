@@ -47,6 +47,20 @@ export default function GenerateTripsFiltersDropdown({
     return () => document.removeEventListener('keydown', handleEsc);
   }, [isOpen, onClose]);
 
+  // Handle click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen, onClose]);
+
   const handleStringIdToggle = (stringId: string) => {
     const newStringIds = pendingFilters.stringIds.includes(stringId)
       ? pendingFilters.stringIds.filter(id => id !== stringId)
@@ -90,7 +104,7 @@ export default function GenerateTripsFiltersDropdown({
       className="bg-white rounded-lg shadow-xl"
       style={{
         width: '480px',
-        height: '480px',
+        height: '360px',
         border: '1px solid #E3E3E3',
         display: 'flex',
         flexDirection: 'column',
@@ -280,7 +294,7 @@ export default function GenerateTripsFiltersDropdown({
       >
         <button
           onClick={handleReset}
-          className="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+          className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
         >
           Reset
         </button>
