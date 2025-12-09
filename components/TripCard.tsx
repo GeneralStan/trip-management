@@ -11,7 +11,7 @@ import { useState } from 'react';
 
 interface TripCardProps {
   trip: Trip;
-  onOrderClick?: (order: Order, trip: Trip) => void;
+  onOrderClick?: (order: Order, trip: Trip, shouldPan?: boolean) => void;
 }
 
 export function TripCard({ trip, onOrderClick }: TripCardProps) {
@@ -111,7 +111,7 @@ export function TripCard({ trip, onOrderClick }: TripCardProps) {
                 <tr
                   key={order.id}
                   className="hover:bg-gray-50 cursor-pointer transition-colors bg-white"
-                  onClick={() => onOrderClick?.(order, trip)}
+                  onClick={() => onOrderClick?.(order, trip, true)}
                 >
                   <td className="p-3 font-semibold text-gray-900">{order.id}</td>
                   <td className="p-3 text-gray-900">{order.outletName}</td>

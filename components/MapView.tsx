@@ -11,7 +11,7 @@ interface MapViewProps {
   depot: DepotLocation;
   center: [number, number];
   selectedOrder: { order: Order; trip: Trip } | null;
-  onOrderClick: (order: Order, trip: Trip) => void;
+  onOrderClick: (order: Order, trip: Trip, shouldPan?: boolean) => void;
   onMoveToRoute: () => void;
   sidebarCollapsed?: boolean;
   panToLocation?: { lat: number; lng: number; zoom?: number; timestamp?: number } | null;
