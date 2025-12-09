@@ -22,7 +22,7 @@ export default function DispatcherOptions({
   );
 
   return (
-    <div className="flex flex-col p-4" style={{ height: '100%' }}>
+    <div className="flex flex-col px-4 pt-4">
       {/* Search Input */}
       <div className="relative mb-4">
         <SearchOutlined
@@ -46,10 +46,7 @@ export default function DispatcherOptions({
       </div>
 
       {/* Scrollable Checkbox List */}
-      <div
-        className="flex-1 overflow-y-auto"
-        style={{ maxHeight: '300px' }}
-      >
+      <div className="flex-1 overflow-y-auto">
         {filteredDispatchers.length > 0 ? (
           filteredDispatchers.map((dispatcher) => (
             <label

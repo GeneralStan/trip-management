@@ -433,7 +433,7 @@ export default function TripManagementPage() {
                   />
                 </button>
                 {showMoreFiltersDropdown && (
-                  <div className="absolute top-full mt-2 z-50">
+                  <div className="absolute top-full mt-2 z-[9999]">
                     <GenerateTripsFiltersDropdown
                       isOpen={showMoreFiltersDropdown}
                       onClose={() => setShowMoreFiltersDropdown(false)}

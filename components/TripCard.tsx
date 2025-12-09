@@ -39,7 +39,7 @@ export function TripCard({ trip, onOrderClick }: TripCardProps) {
           {/* Center: Stats */}
           <div className="flex items-center gap-6 text-sm">
             {/* Orders */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center gap-1">
               <div className="flex items-center gap-1.5 font-semibold text-gray-900 text-base">
                 <ReceiptLongOutlined sx={{ fontSize: 20, color: '#374151' }} />
                 <span>{trip.totalOrders}</span>
@@ -48,7 +48,7 @@ export function TripCard({ trip, onOrderClick }: TripCardProps) {
             </div>
 
             {/* Volume */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center gap-1">
               <div className="flex items-center gap-1.5 font-semibold text-gray-900 text-base">
                 <Inventory2Outlined sx={{ fontSize: 20, color: '#374151' }} />
                 <span>{trip.totalVolume}</span>
@@ -57,7 +57,7 @@ export function TripCard({ trip, onOrderClick }: TripCardProps) {
             </div>
 
             {/* Capacity Usage */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center gap-1">
               <div className="flex items-center gap-1.5 font-semibold text-gray-900 text-base">
                 <LocalShippingOutlined sx={{ fontSize: 20, color: '#374151' }} />
                 <span>{trip.capacityUsage}%</span>
