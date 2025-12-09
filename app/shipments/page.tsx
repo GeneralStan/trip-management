@@ -716,21 +716,7 @@ function ShipmentsContent() {
                 style={{ color: '#252525' }}
               >
                 <FilterListOutlined sx={{ fontSize: 16, color: '#374151' }} />
-                <span>More Filters</span>
-                {dispatcherFilters.length > 0 && (
-                  <span
-                    className="inline-flex items-center justify-center rounded-full text-xs font-medium"
-                    style={{
-                      backgroundColor: '#3B82F6',
-                      color: '#FFFFFF',
-                      minWidth: '20px',
-                      height: '20px',
-                      padding: '0 6px'
-                    }}
-                  >
-                    {dispatcherFilters.length}
-                  </span>
-                )}
+                <span>More Filters{dispatcherFilters.length > 0 ? ` (${dispatcherFilters.length})` : ''}</span>
                 <ExpandMoreOutlined
                   sx={{
                     fontSize: 16,

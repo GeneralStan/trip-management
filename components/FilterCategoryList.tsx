@@ -32,7 +32,6 @@ export default function FilterCategoryList({
           backgroundColor: activeCategory === 'deliveryType' ? '#FFFFFF' : 'transparent',
           border: activeCategory === 'deliveryType' ? '1px solid #252525' : '1px solid #E3E3E3',
           borderRadius: '8px',
-          margin: '8px 0',
         }}
         onMouseEnter={(e) => {
           if (activeCategory !== 'deliveryType') {
@@ -83,7 +82,6 @@ export default function FilterCategoryList({
           backgroundColor: activeCategory === 'dispatcher' ? '#FFFFFF' : 'transparent',
           border: activeCategory === 'dispatcher' ? '1px solid #252525' : '1px solid #E3E3E3',
           borderRadius: '8px',
-          margin: '8px 0',
         }}
         onMouseEnter={(e) => {
           if (activeCategory !== 'dispatcher') {
