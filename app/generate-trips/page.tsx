@@ -408,21 +408,7 @@ export default function TripManagementPage() {
                   style={{ color: '#252525' }}
                 >
                   <FilterListOutlined sx={{ fontSize: 16, color: '#374151' }} />
-                  <span>More Filters</span>
-                  {(filterState.stringIds.length > 0 || filterState.tripNumbers.length > 0) && (
-                    <span
-                      className="inline-flex items-center justify-center rounded-full text-xs font-medium"
-                      style={{
-                        backgroundColor: '#3B82F6',
-                        color: '#FFFFFF',
-                        minWidth: '20px',
-                        height: '20px',
-                        padding: '0 6px'
-                      }}
-                    >
-                      {filterState.stringIds.length + filterState.tripNumbers.length}
-                    </span>
-                  )}
+                  <span>More Filters{(filterState.stringIds.length > 0 || filterState.tripNumbers.length > 0) ? ` (${filterState.stringIds.length + filterState.tripNumbers.length})` : ''}</span>
                   <ExpandMoreOutlined
                     sx={{
                       fontSize: 16,
@@ -443,6 +429,7 @@ export default function TripManagementPage() {
                         setShowMoreFiltersDropdown(false);
                       }}
                       availableStringIds={availableStringIds}
+                      availableTrips={trips}
                     />
                   </div>
                 )}

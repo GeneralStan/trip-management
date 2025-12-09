@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { Trip } from '@/types';
 
 interface GenerateTripsFiltersDropdownProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface GenerateTripsFiltersDropdownProps {
   };
   onApplyFilters: (filters: { stringIds: string[]; tripNumbers: string[] }) => void;
   availableStringIds: string[];
+  availableTrips: Trip[];
 }
 
 type FilterCategory = 'string' | 'tripNumber';
@@ -21,9 +23,11 @@ export default function GenerateTripsFiltersDropdown({
   appliedFilters,
   onApplyFilters,
   availableStringIds,
+  availableTrips,
 }: GenerateTripsFiltersDropdownProps) {
   const [pendingFilters, setPendingFilters] = useState(appliedFilters);
   const [activeCategory, setActiveCategory] = useState<FilterCategory>('string');
+  const [resultCount, setResultCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const tripNumberOptions = ['Trip 1', 'Trip 2', 'Trip 3'];
@@ -60,6 +64,39 @@ export default function GenerateTripsFiltersDropdown({
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isOpen, onClose]);
+
+  // Debounced result count calculation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const count = calculateResultCount(pendingFilters, availableTrips);
+      setResultCount(count);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [pendingFilters, availableTrips]);
+
+  const calculateResultCount = (
+    filters: { stringIds: string[]; tripNumbers: string[] },
+    trips: Trip[]
+  ): number => {
+    return trips.filter(trip => {
+      // Filter by stringIds if selected
+      if (filters.stringIds.length > 0) {
+        const stringId = trip.tripNumber.substring(0, 3);
+        if (!filters.stringIds.includes(stringId)) {
+          return false;
+        }
+      }
+
+      // Filter by tripNumbers if selected
+      if (filters.tripNumbers.length > 0) {
+        if (!filters.tripNumbers.includes(trip.tripNumber)) {
+          return false;
+        }
+      }
+
+      return true;
+    }).length;
+  };
 
   const handleStringIdToggle = (stringId: string) => {
     const newStringIds = pendingFilters.stringIds.includes(stringId)
@@ -113,7 +150,7 @@ export default function GenerateTripsFiltersDropdown({
       {/* Two-column layout */}
       <div className="flex flex-1 min-h-0">
         {/* Left column: Category list */}
-        <div className="border-r p-4" style={{ width: '200px', borderColor: '#E3E3E3' }}>
+        <div className="border-r p-4 gap-4 flex flex-col" style={{ width: '200px', borderColor: '#E3E3E3' }}>
           {/* String Filter Option */}
           <button
             onClick={() => setActiveCategory('string')}
@@ -123,7 +160,6 @@ export default function GenerateTripsFiltersDropdown({
               backgroundColor: activeCategory === 'string' ? '#FFFFFF' : 'transparent',
               border: activeCategory === 'string' ? '1px solid #252525' : '1px solid #E3E3E3',
               borderRadius: '8px',
-              margin: '8px 0',
             }}
             onMouseEnter={(e) => {
               if (activeCategory !== 'string') {
@@ -184,7 +220,6 @@ export default function GenerateTripsFiltersDropdown({
               backgroundColor: activeCategory === 'tripNumber' ? '#FFFFFF' : 'transparent',
               border: activeCategory === 'tripNumber' ? '1px solid #252525' : '1px solid #E3E3E3',
               borderRadius: '8px',
-              margin: '8px 0',
             }}
             onMouseEnter={(e) => {
               if (activeCategory !== 'tripNumber') {
@@ -289,24 +324,29 @@ export default function GenerateTripsFiltersDropdown({
 
       {/* Footer */}
       <div
-        className="flex items-center justify-end px-4 py-4 border-t gap-3"
+        className="flex items-center justify-between px-4 py-4 border-t"
         style={{ borderColor: '#E3E3E3' }}
       >
-        <button
-          onClick={handleReset}
-          className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
-        >
-          Reset
-        </button>
-        <button
-          onClick={handleShowResults}
-          className="px-4 py-2 text-sm font-semibold text-white rounded-lg transition-colors"
-          style={{ backgroundColor: '#080A12' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1a1d2e'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#080A12'}
-        >
-          Show Results
-        </button>
+        <div className="text-sm" style={{ color: '#252525' }}>
+          <span className="font-semibold">{resultCount}</span> {resultCount === 1 ? 'result' : 'results'}
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 text-sm font-semibold text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            Reset
+          </button>
+          <button
+            onClick={handleShowResults}
+            className="px-4 py-2 text-sm font-semibold text-white rounded-lg transition-colors"
+            style={{ backgroundColor: '#080A12' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1a1d2e'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#080A12'}
+          >
+            Show Results
+          </button>
+        </div>
       </div>
     </div>
   );
