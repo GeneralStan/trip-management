@@ -20,7 +20,7 @@ export default function FilterCategoryList({
 }: FilterCategoryListProps) {
   return (
     <div
-      className="w-[200px] border-r flex flex-col"
+      className="w-[200px] border-r flex flex-col px-2"
       style={{ borderColor: '#E3E3E3' }}
     >
       {/* Delivery Type Category */}
@@ -32,7 +32,7 @@ export default function FilterCategoryList({
           backgroundColor: activeCategory === 'deliveryType' ? '#FFFFFF' : 'transparent',
           border: activeCategory === 'deliveryType' ? '1px solid #252525' : '1px solid #E3E3E3',
           borderRadius: '8px',
-          margin: '8px',
+          margin: '8px 0',
         }}
         onMouseEnter={(e) => {
           if (activeCategory !== 'deliveryType') {
@@ -83,7 +83,7 @@ export default function FilterCategoryList({
           backgroundColor: activeCategory === 'dispatcher' ? '#FFFFFF' : 'transparent',
           border: activeCategory === 'dispatcher' ? '1px solid #252525' : '1px solid #E3E3E3',
           borderRadius: '8px',
-          margin: '8px',
+          margin: '8px 0',
         }}
         onMouseEnter={(e) => {
           if (activeCategory !== 'dispatcher') {

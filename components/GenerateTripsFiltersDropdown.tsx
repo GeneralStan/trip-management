@@ -90,7 +90,7 @@ export default function GenerateTripsFiltersDropdown({
       className="bg-white rounded-lg shadow-xl"
       style={{
         width: '480px',
-        height: '420px',
+        height: '480px',
         border: '1px solid #E3E3E3',
         display: 'flex',
         flexDirection: 'column',
@@ -99,7 +99,7 @@ export default function GenerateTripsFiltersDropdown({
       {/* Two-column layout */}
       <div className="flex" style={{ height: '360px' }}>
         {/* Left column: Category list */}
-        <div className="border-r" style={{ width: '200px', borderColor: '#E3E3E3', height: '360px' }}>
+        <div className="border-r px-2" style={{ width: '200px', borderColor: '#E3E3E3', height: '360px' }}>
           {/* String Filter Option */}
           <button
             onClick={() => setActiveCategory('string')}
@@ -109,7 +109,7 @@ export default function GenerateTripsFiltersDropdown({
               backgroundColor: activeCategory === 'string' ? '#FFFFFF' : 'transparent',
               border: activeCategory === 'string' ? '1px solid #252525' : '1px solid #E3E3E3',
               borderRadius: '8px',
-              margin: '8px',
+              margin: '8px 0',
             }}
             onMouseEnter={(e) => {
               if (activeCategory !== 'string') {
@@ -170,7 +170,7 @@ export default function GenerateTripsFiltersDropdown({
               backgroundColor: activeCategory === 'tripNumber' ? '#FFFFFF' : 'transparent',
               border: activeCategory === 'tripNumber' ? '1px solid #252525' : '1px solid #E3E3E3',
               borderRadius: '8px',
-              margin: '8px',
+              margin: '8px 0',
             }}
             onMouseEnter={(e) => {
               if (activeCategory !== 'tripNumber') {
