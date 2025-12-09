@@ -22,7 +22,7 @@ export default function DispatcherOptions({
   );
 
   return (
-    <div className="flex flex-col px-4 pt-4">
+    <div className="h-full flex flex-col px-4 pt-4">
       {/* Search Input */}
       <div className="relative mb-4">
         <SearchOutlined
