@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { Trip } from '@/types';
+import CloseRounded from '@mui/icons-material/CloseRounded';
 
 interface GenerateTripsFiltersDropdownProps {
   isOpen: boolean;
@@ -198,7 +199,7 @@ export default function GenerateTripsFiltersDropdown({
               </div>
               {pendingFilters.stringIds.length > 0 && (
                 <div
-                  className="inline-flex items-center text-xs font-medium self-start"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium self-start"
                   style={{
                     padding: '2px 8px',
                     height: '20px',
@@ -208,20 +209,19 @@ export default function GenerateTripsFiltersDropdown({
                     borderRadius: '4px',
                   }}
                 >
-                  {pendingFilters.stringIds.length}
+                  <span>{pendingFilters.stringIds.length} selected</span>
+                  <button
+                    onClick={handleClearStringIds}
+                    className="flex items-center justify-center hover:bg-white/50 rounded-full transition-colors"
+                    style={{ width: '16px', height: '16px' }}
+                    aria-label="Clear string ID selections"
+                  >
+                    <CloseRounded sx={{ fontSize: 14, color: '#0669CC' }} />
+                  </button>
                 </div>
               )}
             </div>
             <div className="flex items-center gap-2">
-              {pendingFilters.stringIds.length > 0 && (
-                <button
-                  onClick={handleClearStringIds}
-                  className="text-xs font-medium underline hover:no-underline"
-                  style={{ color: '#6B7280' }}
-                >
-                  Clear
-                </button>
-              )}
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ alignSelf: 'flex-start', marginTop: '0px' }}>
                 <path d="M6 4L10 8L6 12" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -258,7 +258,7 @@ export default function GenerateTripsFiltersDropdown({
               </div>
               {pendingFilters.tripNumbers.length > 0 && (
                 <div
-                  className="inline-flex items-center text-xs font-medium self-start"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium self-start"
                   style={{
                     padding: '2px 8px',
                     height: '20px',
@@ -268,20 +268,19 @@ export default function GenerateTripsFiltersDropdown({
                     borderRadius: '4px',
                   }}
                 >
-                  {pendingFilters.tripNumbers.length}
+                  <span>{pendingFilters.tripNumbers.length} selected</span>
+                  <button
+                    onClick={handleClearTripNumbers}
+                    className="flex items-center justify-center hover:bg-white/50 rounded-full transition-colors"
+                    style={{ width: '16px', height: '16px' }}
+                    aria-label="Clear trip number selections"
+                  >
+                    <CloseRounded sx={{ fontSize: 14, color: '#0669CC' }} />
+                  </button>
                 </div>
               )}
             </div>
             <div className="flex items-center gap-2">
-              {pendingFilters.tripNumbers.length > 0 && (
-                <button
-                  onClick={handleClearTripNumbers}
-                  className="text-xs font-medium underline hover:no-underline"
-                  style={{ color: '#6B7280' }}
-                >
-                  Clear
-                </button>
-              )}
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ alignSelf: 'flex-start', marginTop: '0px' }}>
                 <path d="M6 4L10 8L6 12" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
