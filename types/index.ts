@@ -1,4 +1,4 @@
-export type DeliveryType = 'CORE' | 'JARS' | 'KEGS' | 'SPECIAL';
+export type DeliveryType = 'CORE' | 'JARS' | 'KEGS' | 'MECHA' | 'EXPRESS';
 
 export interface Order {
   id: string;
