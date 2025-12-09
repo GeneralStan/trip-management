@@ -20,7 +20,7 @@ export default function FilterCategoryList({
 }: FilterCategoryListProps) {
   return (
     <div
-      className="w-[200px] border-r flex flex-col p-4"
+      className="w-[200px] border-r flex flex-col gap-4 p-4"
       style={{ borderColor: '#E3E3E3' }}
     >
       {/* Delivery Type Category */}
