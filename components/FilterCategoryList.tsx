@@ -26,10 +26,13 @@ export default function FilterCategoryList({
       {/* Delivery Type Category */}
       <button
         onClick={() => onSelectCategory('deliveryType')}
-        className="flex items-center justify-between px-4 py-4 text-left transition-colors"
+        className="flex items-start justify-between text-left transition-colors"
         style={{
-          backgroundColor: activeCategory === 'deliveryType' ? '#E0F2FE' : 'transparent',
-          border: activeCategory === 'deliveryType' ? '1px solid #3B82F6' : '1px solid transparent',
+          padding: '12px 8px',
+          backgroundColor: 'transparent',
+          border: activeCategory === 'deliveryType' ? '1px solid #252525' : '1px solid #E3E3E3',
+          borderRadius: '8px',
+          margin: '8px',
         }}
         onMouseEnter={(e) => {
           if (activeCategory !== 'deliveryType') {
@@ -48,28 +51,39 @@ export default function FilterCategoryList({
           </div>
           {/* Delivery Type Chip - always visible, no × button */}
           <div
-            className="inline-flex items-center px-2.5 py-1.5 rounded text-xs font-medium self-start"
+            className="inline-flex items-center text-xs font-medium self-start"
             style={{
-              backgroundColor: '#E0F2FE',
-              color: '#252525',
-              border: '1px solid #3B82F6',
+              padding: '2px 8px',
+              height: '20px',
+              backgroundColor: '#EBF4FF',
+              color: '#0669CC',
+              border: '1px solid #9CCDFF',
+              borderRadius: '4px',
             }}
           >
             {deliveryType}
           </div>
         </div>
         <ChevronRightOutlined
-          sx={{ fontSize: 16, color: '#6B7280', marginLeft: 1 }}
+          sx={{
+            fontSize: 16,
+            color: '#6B7280',
+            alignSelf: 'flex-start',
+            marginTop: '0px'
+          }}
         />
       </button>
 
       {/* Dispatcher Category */}
       <button
         onClick={() => onSelectCategory('dispatcher')}
-        className="flex items-center justify-between px-4 py-4 text-left transition-colors"
+        className="flex items-start justify-between text-left transition-colors"
         style={{
-          backgroundColor: activeCategory === 'dispatcher' ? '#E0F2FE' : 'transparent',
-          border: activeCategory === 'dispatcher' ? '1px solid #3B82F6' : '1px solid transparent',
+          padding: '12px 8px',
+          backgroundColor: 'transparent',
+          border: activeCategory === 'dispatcher' ? '1px solid #252525' : '1px solid #E3E3E3',
+          borderRadius: '8px',
+          margin: '8px',
         }}
         onMouseEnter={(e) => {
           if (activeCategory !== 'dispatcher') {
@@ -89,11 +103,14 @@ export default function FilterCategoryList({
           {/* Dispatcher Chip - only visible when selections exist, with × button */}
           {selectedDispatchers.length > 0 && (
             <div
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-medium self-start"
+              className="inline-flex items-center gap-1.5 text-xs font-medium self-start"
               style={{
-                backgroundColor: '#E0F2FE',
-                color: '#252525',
-                border: '1px solid #3B82F6',
+                padding: '2px 8px',
+                height: '20px',
+                backgroundColor: '#EBF4FF',
+                color: '#0669CC',
+                border: '1px solid #9CCDFF',
+                borderRadius: '4px',
               }}
             >
               <span>{selectedDispatchers.length} selected</span>
@@ -103,13 +120,18 @@ export default function FilterCategoryList({
                 style={{ width: '16px', height: '16px' }}
                 aria-label="Clear dispatcher selections"
               >
-                <CloseRounded sx={{ fontSize: 14, color: '#252525' }} />
+                <CloseRounded sx={{ fontSize: 14, color: '#0669CC' }} />
               </button>
             </div>
           )}
         </div>
         <ChevronRightOutlined
-          sx={{ fontSize: 16, color: '#6B7280', marginLeft: 1 }}
+          sx={{
+            fontSize: 16,
+            color: '#6B7280',
+            alignSelf: 'flex-start',
+            marginTop: '0px'
+          }}
         />
       </button>
     </div>
