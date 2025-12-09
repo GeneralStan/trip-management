@@ -142,14 +142,14 @@ export default function MoreFiltersDropdown({
       className="bg-white rounded-lg shadow-xl"
       style={{
         width: '480px',
+        height: '420px',
         border: '1px solid #E3E3E3',
-        maxHeight: '500px',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
       {/* Two-column layout */}
-      <div className="flex" style={{ height: '380px' }}>
+      <div className="flex" style={{ height: '360px' }}>
         {/* Left column: Category list */}
         <FilterCategoryList
           activeCategory={activeCategory}

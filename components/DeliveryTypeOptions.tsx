@@ -18,11 +18,26 @@ export default function DeliveryTypeOptions({
 }: DeliveryTypeOptionsProps) {
   return (
     <div className="p-4">
-      {deliveryTypes.map((type) => (
+      {deliveryTypes.map((type) => {
+        const isSelected = selectedType === type.value;
+        return (
         <button
           key={type.value}
           onClick={() => onSelectType(type.value)}
-          className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors rounded"
+          className="w-full px-4 py-2.5 flex items-center gap-3 transition-colors rounded"
+          style={{
+            backgroundColor: isSelected ? '#FFFFFF' : 'transparent',
+          }}
+          onMouseEnter={(e) => {
+            if (!isSelected) {
+              e.currentTarget.style.backgroundColor = '#F9FAFB';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isSelected) {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }
+          }}
         >
           {/* Custom radio circle - reused pattern from DeliveryTypeDropdown */}
           <div
@@ -52,7 +67,8 @@ export default function DeliveryTypeOptions({
             {type.label}
           </span>
         </button>
-      ))}
+        );
+      })}
     </div>
   );
 }

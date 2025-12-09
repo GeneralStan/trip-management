@@ -44,6 +44,9 @@ function ShipmentsContent() {
   // More Filters dropdown state
   const [showMoreFiltersDropdown, setShowMoreFiltersDropdown] = useState(false);
 
+  // Loading state for Generate Trips button
+  const [isGeneratingTrips, setIsGeneratingTrips] = useState(false);
+
   // Extract unique dispatchers from mock data
   const availableDispatchers = useMemo(() => {
     const dispatchers = new Set<string>();
@@ -429,7 +432,9 @@ function ShipmentsContent() {
     setSelectedTrips(new Set());
   };
 
-  const handleGenerateTrips = () => {
+  const handleGenerateTrips = async () => {
+    setIsGeneratingTrips(true);
+
     // Extract unique String IDs from selected orders
     const stringIds = extractStringIdsFromOrders(mockOrders, selectedOrders);
 
@@ -442,6 +447,9 @@ function ShipmentsContent() {
       sessionStorage.setItem('selectedStringIds', JSON.stringify(stringIds));
       sessionStorage.setItem('tripDeliveryType', deliveryType);
     }
+
+    // Simulate loading state
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     // Navigate to Generate Trips screen
     router.push('/generate-trips');
@@ -802,11 +810,34 @@ function ShipmentsContent() {
             {activeTab === 'orders' ? (
               <button
                 onClick={handleGenerateTrips}
-                disabled={selectedOrders.size === 0}
-                className="rounded-md bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                disabled={selectedOrders.size === 0 || isGeneratingTrips}
+                className="rounded-md px-3 py-2.5 text-sm font-semibold text-white flex items-center justify-center gap-2 disabled:cursor-not-allowed"
+                style={{
+                  backgroundColor: selectedOrders.size === 0 || isGeneratingTrips ? '#4f4f4f' : '#080A12',
+                  opacity: selectedOrders.size === 0 || isGeneratingTrips ? 0.6 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedOrders.size > 0 && !isGeneratingTrips) {
+                    e.currentTarget.style.backgroundColor = '#1a1d2e';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedOrders.size > 0 && !isGeneratingTrips) {
+                    e.currentTarget.style.backgroundColor = '#080A12';
+                  }
+                }}
               >
-                <NorthEastOutlined sx={{ fontSize: 20, color: 'white' }} />
-                Generate Trips
+                {isGeneratingTrips ? (
+                  <>
+                    <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <NorthEastOutlined sx={{ fontSize: 20, color: 'white' }} />
+                    Generate Trips
+                  </>
+                )}
               </button>
             ) : (
               <button

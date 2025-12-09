@@ -90,26 +90,36 @@ export default function GenerateTripsFiltersDropdown({
       className="bg-white rounded-lg shadow-xl"
       style={{
         width: '480px',
+        height: '420px',
         border: '1px solid #E3E3E3',
-        maxHeight: '500px',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
       {/* Two-column layout */}
-      <div className="flex" style={{ height: '380px' }}>
+      <div className="flex" style={{ height: '360px' }}>
         {/* Left column: Category list */}
-        <div className="border-r" style={{ width: '200px', borderColor: '#E3E3E3', height: '380px' }}>
+        <div className="border-r" style={{ width: '200px', borderColor: '#E3E3E3', height: '360px' }}>
           {/* String Filter Option */}
           <button
             onClick={() => setActiveCategory('string')}
             className="flex items-start justify-between text-left transition-colors w-full"
             style={{
               padding: '12px 8px',
-              backgroundColor: 'transparent',
+              backgroundColor: activeCategory === 'string' ? '#FFFFFF' : 'transparent',
               border: activeCategory === 'string' ? '1px solid #252525' : '1px solid #E3E3E3',
               borderRadius: '8px',
               margin: '8px',
+            }}
+            onMouseEnter={(e) => {
+              if (activeCategory !== 'string') {
+                e.currentTarget.style.backgroundColor = '#F5F5F5';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (activeCategory !== 'string') {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }
             }}
           >
             <div className="flex flex-col gap-1 flex-1">
@@ -157,10 +167,20 @@ export default function GenerateTripsFiltersDropdown({
             className="flex items-start justify-between text-left transition-colors w-full"
             style={{
               padding: '12px 8px',
-              backgroundColor: 'transparent',
+              backgroundColor: activeCategory === 'tripNumber' ? '#FFFFFF' : 'transparent',
               border: activeCategory === 'tripNumber' ? '1px solid #252525' : '1px solid #E3E3E3',
               borderRadius: '8px',
               margin: '8px',
+            }}
+            onMouseEnter={(e) => {
+              if (activeCategory !== 'tripNumber') {
+                e.currentTarget.style.backgroundColor = '#F5F5F5';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (activeCategory !== 'tripNumber') {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }
             }}
           >
             <div className="flex flex-col gap-1 flex-1">

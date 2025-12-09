@@ -387,8 +387,8 @@ export default function TripManagementPage() {
 
             {/* Search and More Filters */}
             <div className="flex items-center gap-3 mt-4">
-              {/* Search Bar - Fixed Width */}
-              <div className="relative" style={{ width: '249px' }}>
+              {/* Search Bar - Full Width */}
+              <div className="relative flex-1">
                 <SearchOutlined sx={{ fontSize: 16, color: '#9CA3AF', position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                 <input
                   type="text"

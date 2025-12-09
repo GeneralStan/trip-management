@@ -134,7 +134,7 @@ const createDepotIcon = (isDeEmphasized: boolean = false) => {
     >
       <svg width="35" height="44" viewBox="0 0 35 44" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', top: 0, left: 0 }}>
         {/* Pin shape */}
-        <path d="M17.5 0C11 0 5.5 5.5 5.5 12C5.5 21 17.5 44 17.5 44C17.5 44 29.5 21 29.5 12C29.5 5.5 24 0 17.5 0Z" fill="#DC2626"/>
+        <path d="M17.5 0C11 0 5.5 5.5 5.5 12C5.5 21 17.5 44 17.5 44C17.5 44 29.5 21 29.5 12C29.5 5.5 24 0 17.5 0Z" fill="#101010"/>
       </svg>
       {/* Storefront icon */}
       <div style={{ position: 'absolute', top: '8px', left: '50%', transform: 'translateX(-50%)', zIndex: 1 }}>
