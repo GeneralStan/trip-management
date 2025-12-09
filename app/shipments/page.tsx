@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense, useRef, useMemo } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { Toast } from '@/components/Toast';
-import DatePicker from '@/components/DatePicker';
+import SimpleDatePicker from '@/components/SimpleDatePicker';
 import MoreFiltersDropdown from '@/components/MoreFiltersDropdown';
 import SortByDropdown from '@/components/SortByDropdown';
 import TripsSortByDropdown from '@/components/TripsSortByDropdown';
@@ -109,9 +109,14 @@ function ShipmentsContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Date picker state - now supports date ranges
-  const [deliveryDateStart, setDeliveryDateStart] = useState<Date | null>(new Date());
-  const [deliveryDateEnd, setDeliveryDateEnd] = useState<Date | null>(null);
+  // Date picker state - simple single date picker (defaults to current day + 2)
+  const getDefaultDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 2);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+  const [deliveryDate, setDeliveryDate] = useState<Date | null>(getDefaultDate());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showSummaryDatePicker, setShowSummaryDatePicker] = useState(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
@@ -136,64 +141,43 @@ function ShipmentsContent() {
   const ordersHeaderCheckboxRef = useRef<HTMLInputElement>(null);
   const tripsHeaderCheckboxRef = useRef<HTMLInputElement>(null);
 
-  // Format date for display - handles single dates and date ranges
-  const formatDateDisplay = (startDate: Date | null, endDate: Date | null): string => {
-    if (!startDate) return 'Select date';
+  // Format date for display - simple single date format
+  const formatDateDisplay = (date: Date | null): string => {
+    if (!date) return 'Select date';
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const formatSingleDate = (date: Date): string => {
-      const isToday =
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear();
+    const isToday =
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
 
-      if (isToday) return 'Today';
+    if (isToday) return 'Today';
 
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const isYesterday =
-        date.getDate() === yesterday.getDate() &&
-        date.getMonth() === yesterday.getMonth() &&
-        date.getFullYear() === yesterday.getFullYear();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const isYesterday =
+      date.getDate() === yesterday.getDate() &&
+      date.getMonth() === yesterday.getMonth() &&
+      date.getFullYear() === yesterday.getFullYear();
 
-      if (isYesterday) return 'Yesterday';
+    if (isYesterday) return 'Yesterday';
 
-      // Format as dd/mm/yy
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = String(date.getFullYear()).slice(-2);
-      return `${day}/${month}/${year}`;
-    };
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const isTomorrow =
+      date.getDate() === tomorrow.getDate() &&
+      date.getMonth() === tomorrow.getMonth() &&
+      date.getFullYear() === tomorrow.getFullYear();
 
-    if (!endDate) {
-      return formatSingleDate(startDate);
-    }
+    if (isTomorrow) return 'Tomorrow';
 
-    // Check for preset ranges
-    const last7Start = new Date(today);
-    last7Start.setDate(last7Start.getDate() - 6);
-
-    const last30Start = new Date(today);
-    last30Start.setDate(last30Start.getDate() - 29);
-
-    const isSameDay = (d1: Date, d2: Date) => {
-      return d1.getDate() === d2.getDate() &&
-        d1.getMonth() === d2.getMonth() &&
-        d1.getFullYear() === d2.getFullYear();
-    };
-
-    if (isSameDay(startDate, last7Start) && isSameDay(endDate, today)) {
-      return 'Last 7 days';
-    }
-
-    if (isSameDay(startDate, last30Start) && isSameDay(endDate, today)) {
-      return 'Last 30 days';
-    }
-
-    // Custom range
-    return `${formatSingleDate(startDate)} - ${formatSingleDate(endDate)}`;
+    // Format as dd/mm/yy
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
   };
 
   // Handle click outside to close date pickers and dropdowns
@@ -595,23 +579,6 @@ function ShipmentsContent() {
                   {finalizedOrdersCount}
                 </span>
               </button>
-              <button
-                onClick={() => setOrderFilterTab('all')}
-                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2 ${
-                  orderFilterTab === 'all'
-                    ? 'bg-white text-gray-900 border-2 border-gray-900'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                All
-                <span className={`inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full ${
-                  orderFilterTab === 'all'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600'
-                }`}>
-                  {allOrdersCount}
-                </span>
-              </button>
             </div>
           ) : (
             <div className="flex items-center gap-3 mb-6">
@@ -706,18 +673,16 @@ function ShipmentsContent() {
                 className="px-4 py-2.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
               >
                 <CalendarMonthRounded sx={{ fontSize: 16, color: '#374151' }} />
-                Delivery Date: {formatDateDisplay(deliveryDateStart, deliveryDateEnd)}
+                Delivery Date: {formatDateDisplay(deliveryDate)}
               </button>
               {showDatePicker && (
                 <div className="absolute top-full mt-2 z-50">
-                  <DatePicker
-                    startDate={deliveryDateStart}
-                    endDate={deliveryDateEnd}
-                    onSelectDateRange={(start, end) => {
-                      setDeliveryDateStart(start);
-                      setDeliveryDateEnd(end);
+                  <SimpleDatePicker
+                    selectedDate={deliveryDate}
+                    onSelectDate={(date) => {
+                      setDeliveryDate(date);
+                      setShowDatePicker(false);
                     }}
-                    onClose={() => setShowDatePicker(false)}
                   />
                 </div>
               )}
@@ -895,18 +860,16 @@ function ShipmentsContent() {
                       className="px-4 py-2.5 text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
                     >
                       <CalendarMonthRounded sx={{ fontSize: 16, color: '#374151' }} />
-                      Delivery Date: {formatDateDisplay(deliveryDateStart, deliveryDateEnd)}
+                      Delivery Date: {formatDateDisplay(deliveryDate)}
                     </button>
                     {showSummaryDatePicker && (
                       <div className="absolute top-full mt-2 z-50">
-                        <DatePicker
-                          startDate={deliveryDateStart}
-                          endDate={deliveryDateEnd}
-                          onSelectDateRange={(start, end) => {
-                            setDeliveryDateStart(start);
-                            setDeliveryDateEnd(end);
+                        <SimpleDatePicker
+                          selectedDate={deliveryDate}
+                          onSelectDate={(date) => {
+                            setDeliveryDate(date);
+                            setShowSummaryDatePicker(false);
                           }}
-                          onClose={() => setShowSummaryDatePicker(false)}
                         />
                       </div>
                     )}

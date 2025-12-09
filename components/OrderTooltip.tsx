@@ -130,7 +130,7 @@ export function OrderTooltip({
         {/* Action Button */}
         <button
           onClick={onMoveToRoute}
-          className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          className="w-full rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
           Move to another trip
         </button>

@@ -13,7 +13,7 @@ export const mockTrips: Trip[] = [
   {
     id: '1',
     tripNumber: '10101',
-    subRegion: 'La Port Provide',
+    subRegion: 'La Porte Providence',
     color: '#7C3AED', // Purple
     deliveryType: 'CORE',
     totalOrders: 4,

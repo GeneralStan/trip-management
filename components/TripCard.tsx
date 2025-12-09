@@ -32,7 +32,7 @@ export function TripCard({ trip, onOrderClick }: TripCardProps) {
                 />
                 <span className="font-semibold text-gray-900">{trip.tripNumber}</span>
               </div>
-              <span className="text-xs text-gray-600 ml-5">{trip.subRegion}</span>
+              <span className="text-xs text-gray-600 ml-5 truncate">{trip.subRegion}</span>
             </div>
           </div>
 
