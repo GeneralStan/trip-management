@@ -17,7 +17,7 @@ export default function DeliveryTypeOptions({
   onSelectType,
 }: DeliveryTypeOptionsProps) {
   return (
-    <div className="p-4">
+    <div className="px-4 pt-4">
       {deliveryTypes.map((type) => {
         const isSelected = selectedType === type.value;
         return (
