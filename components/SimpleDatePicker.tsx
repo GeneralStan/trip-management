@@ -6,10 +6,11 @@ import ChevronRightOutlined from '@mui/icons-material/ChevronRightOutlined';
 
 interface SimpleDatePickerProps {
   selectedDate: Date | null;
+  availableDates?: string[] // format is 'YYYY-MM-DD'
   onSelectDate: (date: Date) => void;
 }
 
-export default function SimpleDatePicker({ selectedDate, onSelectDate }: SimpleDatePickerProps) {
+export default function SimpleDatePicker({ selectedDate,availableDates, onSelectDate }: SimpleDatePickerProps) {
   const today = new Date();
 
   // Initialize with selected date or today's month/year
@@ -96,9 +97,25 @@ export default function SimpleDatePicker({ selectedDate, onSelectDate }: SimpleD
     }
   };
 
+  // Helper to check if a date is in the availableDates list
+  const isDateAvailable = (date: Date): boolean => {
+    // If no availableDates provided or empty, all dates are available
+    if (!availableDates || availableDates.length === 0) return true;
+
+    // Format date as YYYY-MM-DD to match availableDates format
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
+    return availableDates.includes(dateStr);
+  };
+
   // Date click handler - immediately apply selection
   const handleDateClick = (date: Date) => {
-    onSelectDate(date);
+    if (isDateAvailable(date)) {
+      onSelectDate(date);
+    }
   };
 
   return (
@@ -160,14 +177,17 @@ export default function SimpleDatePicker({ selectedDate, onSelectDate }: SimpleD
           }
 
           const isSelected = isSameDay(day.fullDate, selectedDate);
+          const isAvailable = isDateAvailable(day.fullDate);
 
           return (
             <button
               key={index}
               onClick={() => handleDateClick(day.fullDate)}
+              disabled={!isAvailable}
               className={`
                 text-center text-xs font-normal transition-colors rounded
-                ${isSelected ? 'bg-[#252525] text-white font-semibold' : 'text-[#252525] hover:bg-[#F5F5F5]'}
+                ${isSelected ? 'bg-[#252525] text-white font-semibold' : ''}
+                ${!isAvailable ? 'text-gray-300 cursor-not-allowed' : 'text-[#252525] hover:bg-[#F5F5F5]'}
               `}
               style={{
                 width: '36px',

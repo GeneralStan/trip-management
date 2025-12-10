@@ -100,10 +100,10 @@ export function TripCard({ trip, onOrderClick }: TripCardProps) {
           <table className="w-full text-sm">
             <thead style={{ backgroundColor: '#F3F4F6' }}>
               <tr className="text-left text-xs font-semibold text-gray-700 uppercase">
-                <th className="p-3">Order ID</th>
+                <th className="p-3">Outlet</th>
                 <th className="p-3">Outlet Name</th>
-                <th className="p-3">Address</th>
-                <th className="p-3 text-right">Cubes</th>
+                <th className="p-3">City</th>
+                <th className="p-3 text-right">Capacity</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 bg-white">
@@ -115,7 +115,7 @@ export function TripCard({ trip, onOrderClick }: TripCardProps) {
                 >
                   <td className="p-3 font-semibold text-gray-900">{order.id}</td>
                   <td className="p-3 text-gray-900">{order.outletName}</td>
-                  <td className="p-3 text-gray-700">{order.address}</td>
+                  <td className="p-3 text-gray-700">{order.city}</td>
                   <td className="p-3 text-right font-semibold text-gray-900">{order.cubes}</td>
                 </tr>
               ))}

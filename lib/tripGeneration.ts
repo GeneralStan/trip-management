@@ -159,15 +159,15 @@ export function generateTripsFromStringIds(
  * @returns Array of unique String IDs
  */
 export function extractStringIdsFromOrders(
-  orders: { id: string; stringId: string }[],
+  orders: {string: string}[],
   selectedOrderIds: Set<string>
 ): string[] {
   const stringIds = new Set<string>();
 
   selectedOrderIds.forEach((orderId) => {
-    const order = orders.find((o) => o.id === orderId);
+    const order = orders.find((o) => o.string === orderId);
     if (order) {
-      stringIds.add(order.stringId);
+      stringIds.add(order.string);
     }
   });
 

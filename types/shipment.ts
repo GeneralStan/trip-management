@@ -1,13 +1,18 @@
 export interface ShipmentOrder {
-  id: string;
-  stringId: string;
-  driver: string;
-  deliveryDate: string;
-  orders: number;
-  outlets: number;
-  deliveryType: 'CORE' | 'JARS' | 'KEGS' | 'MECHA' | 'EXPRESS';
-  volume: number;
-  volumeCrates: number;
+    "string": string,
+    capacity: number,
+    delivery_type: string,
+    order_count: number,
+    dispatcher: string,
+  // id: string;
+  // stringId: string;
+  // driver: string;
+  // deliveryDate: string;
+  // orders: number;
+  // outlets: number;
+  // deliveryType: 'CORE' | 'JARS' | 'KEGS' | 'MECHA' | 'EXPRESS';
+  // volume: number;
+  // volumeCrates: number;
   status: 'Pending' | 'Finalized';
 }
 
