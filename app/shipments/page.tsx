@@ -825,15 +825,7 @@ function ShipmentsContent() {
                   </>
                 )}
               </button>
-            ) : (
-              <button
-                disabled={selectedTrips.size === 0}
-                className="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <NorthEastOutlined sx={{ fontSize: 16, color: '#374151' }} />
-                Dispatch Trips
-              </button>
-            )}
+            ) : null}
           </div>
           )}
 
