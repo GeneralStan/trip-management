@@ -642,7 +642,7 @@ function ShipmentsContent() {
                 </span>
                             </button>
                         </div>
-                    ) : activeTab === 'orders' ? null : null}
+                    ) : null}
 
                     {/* Search and Actions */}
                     {activeTab !== 'summary' && (
