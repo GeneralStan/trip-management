@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Trip } from '@/types';
 import CloseRounded from '@mui/icons-material/CloseRounded';
+import SearchOutlined from '@mui/icons-material/SearchOutlined';
 
 interface GenerateTripsFiltersDropdownProps {
   isOpen: boolean;
@@ -32,8 +33,14 @@ export default function GenerateTripsFiltersDropdown({
   const [activeCategory, setActiveCategory] = useState<FilterCategory>('string');
   const [resultCount, setResultCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [stringSearchQuery, setStringSearchQuery] = useState('');
 
   const tripNumberOptions = ['Trip 1', 'Trip 2', 'Trip 3'];
+
+  // Filter string IDs based on search query
+  const filteredStringIds = availableStringIds.filter(stringId =>
+    stringId.toLowerCase().includes(stringSearchQuery.toLowerCase())
+  );
 
   // Calculate dropdown position based on button location
   const getDropdownPosition = () => {
@@ -52,6 +59,7 @@ export default function GenerateTripsFiltersDropdown({
     if (isOpen) {
       setPendingFilters(appliedFilters);
       setActiveCategory('string');
+      setStringSearchQuery(''); // Reset search when dropdown opens
     }
   }, [isOpen, appliedFilters]);
 
@@ -104,7 +112,14 @@ export default function GenerateTripsFiltersDropdown({
 
       // Filter by tripNumbers if selected
       if (filters.tripNumbers.length > 0) {
-        if (!filters.tripNumbers.includes(trip.tripNumber)) {
+        // Extract last 2 digits and convert to "Trip N" format
+        const lastTwoDigits = trip.tripNumber.substring(3);
+        let tripNumber = '';
+        if (lastTwoDigits === '01') tripNumber = 'Trip 1';
+        else if (lastTwoDigits === '02') tripNumber = 'Trip 2';
+        else if (lastTwoDigits === '03') tripNumber = 'Trip 3';
+
+        if (!filters.tripNumbers.includes(tripNumber)) {
           return false;
         }
       }
@@ -288,32 +303,57 @@ export default function GenerateTripsFiltersDropdown({
           </button>
         </div>
 
-        {/* Right column: Checkbox Options */}
-        <div className="flex-1 overflow-y-auto p-4">
+        {/* Right column: Search + Checkbox Options */}
+        <div className="flex-1 flex flex-col overflow-hidden p-4">
           {activeCategory === 'string' ? (
-            <div className="space-y-2">
-              {availableStringIds.length > 0 ? (
-                availableStringIds.map((stringId) => (
-                  <label
-                    key={stringId}
-                    className="flex items-center gap-3 py-2 px-2 hover:bg-gray-50 rounded cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={pendingFilters.stringIds.includes(stringId)}
-                      onChange={() => handleStringIdToggle(stringId)}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <span className="text-sm" style={{ color: '#252525' }}>
-                      {stringId}
-                    </span>
-                  </label>
-                ))
-              ) : (
-                <div className="flex items-center justify-center py-8 text-sm text-gray-500">
-                  No String IDs available
-                </div>
-              )}
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {/* Search Input */}
+              <div className="relative mb-4">
+                <SearchOutlined
+                  sx={{
+                    fontSize: 16,
+                    color: '#9CA3AF',
+                    position: 'absolute',
+                    left: 12,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                  }}
+                />
+                <input
+                  type="text"
+                  placeholder="Search string"
+                  value={stringSearchQuery}
+                  onChange={(e) => setStringSearchQuery(e.target.value)}
+                  className="w-full rounded-md border py-2 pl-10 pr-4 text-sm focus:border-gray-400 focus:outline-none placeholder:text-gray-500 text-gray-900 caret-gray-900"
+                  style={{ backgroundColor: '#FAFAFA', borderColor: '#E3E3E3' }}
+                />
+              </div>
+
+              {/* Filtered String Options */}
+              <div className="flex-1 overflow-y-auto">
+                {filteredStringIds.length > 0 ? (
+                  filteredStringIds.map((stringId) => (
+                    <label
+                      key={stringId}
+                      className="flex items-center gap-3 py-2 px-2 hover:bg-gray-50 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={pendingFilters.stringIds.includes(stringId)}
+                        onChange={() => handleStringIdToggle(stringId)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm" style={{ color: '#252525' }}>
+                        {stringId}
+                      </span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="flex items-center justify-center py-8 text-sm text-gray-500">
+                    No strings found
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="space-y-2">

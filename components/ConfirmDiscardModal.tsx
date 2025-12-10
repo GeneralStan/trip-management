@@ -67,7 +67,7 @@ export function ConfirmDiscardModal({
         style={{ width: '400px' }}
       >
         {/* Header Frame */}
-        <div className="p-6 flex items-start gap-3" style={{ borderBottom: '1px solid #E3E3E3' }}>
+        <div className="p-4 flex items-start gap-3" style={{ borderBottom: '1px solid #E3E3E3' }}>
           <WarningRounded sx={{ fontSize: 24, color: '#F59E0B' }} />
           <div className="flex-1">
             <h2
@@ -89,7 +89,7 @@ export function ConfirmDiscardModal({
 
         {/* Footer Frame */}
         <div
-          className="px-6 py-4 flex items-center justify-end gap-3"
+          className="p-4 flex items-center justify-end gap-3"
           style={{ borderTop: '1px solid #E3E3E3' }}
         >
           <button
