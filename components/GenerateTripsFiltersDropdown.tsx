@@ -104,7 +104,14 @@ export default function GenerateTripsFiltersDropdown({
 
       // Filter by tripNumbers if selected
       if (filters.tripNumbers.length > 0) {
-        if (!filters.tripNumbers.includes(trip.tripNumber)) {
+        // Extract last 2 digits and convert to "Trip N" format
+        const lastTwoDigits = trip.tripNumber.substring(3);
+        let tripNumber = '';
+        if (lastTwoDigits === '01') tripNumber = 'Trip 1';
+        else if (lastTwoDigits === '02') tripNumber = 'Trip 2';
+        else if (lastTwoDigits === '03') tripNumber = 'Trip 3';
+
+        if (!filters.tripNumbers.includes(tripNumber)) {
           return false;
         }
       }
