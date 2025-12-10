@@ -793,7 +793,7 @@ function ShipmentsContent() {
               </div>
             )}
             <div className="flex-1"></div>
-            {activeTab === 'orders' ? (
+            {activeTab === 'orders' && orderFilterTab === 'pending' ? (
               <button
                 onClick={handleGenerateTrips}
                 disabled={selectedOrders.size === 0 || isGeneratingTrips}
