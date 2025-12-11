@@ -4,9 +4,12 @@ export interface Order {
   id: string;
   outletName: string;
   address: string;
+  city: string;
   cubes: number;
   coordinates: [number, number]; // [latitude, longitude]
   deliverySequence: number; // 1, 2, 3, etc.
+  gridNumber: string;
+  plannedRoute: string;
 }
 
 export interface Trip {
@@ -19,7 +22,12 @@ export interface Trip {
   totalOrders: number;
   totalVolume: number;
   capacityUsage: number; // percentage
+  vehicleCapacity: number;
   isSelected?: boolean; // For UI state - indicates if trip card is selected
+  dispatcher: string;
+  dispatcherRoute: string;
+  date: string; // YYYY-MM-DD format
+  stringId: string; // e.g., "104" - first 3 digits of trip number
 }
 
 export interface MoveToRouteState {

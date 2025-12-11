@@ -346,7 +346,7 @@ export function MapView({
         <Map
           mapId="trip-management-map"
           defaultCenter={{ lat: center[0], lng: center[1] }}
-          defaultZoom={15}
+          defaultZoom={12}
           gestureHandling="greedy"
           disableDefaultUI={true}
         >

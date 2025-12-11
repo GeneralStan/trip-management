@@ -5,6 +5,8 @@ import CheckCircleOutlined from '@mui/icons-material/CheckCircle';
 import CloseOutlined from '@mui/icons-material/Close';
 import Undo from '@mui/icons-material/Undo';
 
+export type ToastStatus = 'success' | 'error';
+
 interface ToastProps {
   message: string;
   description?: string;
@@ -12,6 +14,7 @@ interface ToastProps {
   onClose: () => void;
   onUndo?: () => void;
   autoHideDuration?: number;
+  status?: ToastStatus
 }
 
 export function Toast({
@@ -20,7 +23,8 @@ export function Toast({
   isVisible,
   onClose,
   onUndo,
-  autoHideDuration = 3500
+  autoHideDuration = 3500,
+  status = 'success'
 }: ToastProps) {
   const [isClosing, setIsClosing] = useState(false);
 
@@ -94,9 +98,13 @@ export function Toast({
       >
         {/* Content */}
         <div className="flex items-center" style={{ gap: '8px' }}>
-          {/* Success Icon */}
+          {/* Status Icon */}
           <div className="flex-shrink-0">
-            <CheckCircleOutlined sx={{ fontSize: 32, color: '#50A20F' }} />
+            {status === 'error' ? (
+              <CloseOutlined sx={{ fontSize: 32, color: '#DC2626' }} />
+            ) : (
+              <CheckCircleOutlined sx={{ fontSize: 32, color: '#50A20F' }} />
+            )}
           </div>
 
           {/* Message */}

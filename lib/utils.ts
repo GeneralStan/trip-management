@@ -22,6 +22,6 @@ export function wouldExceedCapacity(
 /**
  * Calculate capacity usage percentage
  */
-export function calculateCapacityUsage(volume: number): number {
-  return Math.round((volume / VEHICLE_CAPACITY) * 100);
+export function calculateCapacityUsage(volume: number,capacity: number): number {
+  return Math.round((volume / capacity) * 100);
 }

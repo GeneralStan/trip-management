@@ -6,7 +6,7 @@ import CloseRounded from '@mui/icons-material/CloseRounded';
 interface FilterCategoryListProps {
   activeCategory: 'deliveryType' | 'dispatcher';
   onSelectCategory: (category: 'deliveryType' | 'dispatcher') => void;
-  deliveryType: string;
+  deliveryType: string | null;
   selectedDispatchers: string[];
   onClearDispatchers: (e: React.MouseEvent) => void;
 }
