@@ -2,36 +2,36 @@ import { ShipmentOrder, ShipmentTrip } from '@/types/shipment';
 
 export const mockOrders: ShipmentOrder[] = [
   // CORE - Pending
-  { id: '1', stringId: '101', driver: 'Jose Hardewa', deliveryDate: '13/04/24', orders: 8, outlets: 6, deliveryType: 'CORE', volume: 720, volumeCrates: Math.round(720 / 1.3), status: 'Pending' },
-  { id: '2', stringId: '102', driver: 'Albert Leriche', deliveryDate: '14/04/24', orders: 12, outlets: 9, deliveryType: 'CORE', volume: 1050, volumeCrates: Math.round(1050 / 1.3), status: 'Pending' },
-  { id: '3', stringId: '103', driver: 'Ify Kiplimo', deliveryDate: '13/04/24', orders: 5, outlets: 4, deliveryType: 'CORE', volume: 380, volumeCrates: Math.round(380 / 1.3), status: 'Pending' },
-  { id: '4', stringId: '104', driver: 'David Karanja', deliveryDate: '15/04/24', orders: 15, outlets: 12, deliveryType: 'CORE', volume: 1340, volumeCrates: Math.round(1340 / 1.3), status: 'Pending' },
-  { id: '5', stringId: '105', driver: 'Cheryll Onyango', deliveryDate: '13/04/24', orders: 3, outlets: 3, deliveryType: 'CORE', volume: 210, volumeCrates: Math.round(210 / 1.3), status: 'Pending' },
-
-  // JARS - Pending
-  { id: '6', stringId: '106', driver: 'John Mwangi', deliveryDate: '14/04/24', orders: 10, outlets: 7, deliveryType: 'JARS', volume: 890, volumeCrates: Math.round(890 / 1.3), status: 'Pending' },
-  { id: '7', stringId: '107', driver: 'Benson Othieno', deliveryDate: '13/04/24', orders: 4, outlets: 3, deliveryType: 'JARS', volume: 320, volumeCrates: Math.round(320 / 1.3), status: 'Pending' },
-  { id: '8', stringId: '108', driver: 'Mungai Abrams', deliveryDate: '16/04/24', orders: 7, outlets: 5, deliveryType: 'JARS', volume: 560, volumeCrates: Math.round(560 / 1.3), status: 'Pending' },
-  { id: '9', stringId: '109', driver: 'Sarah Johnson', deliveryDate: '14/04/24', orders: 13, outlets: 10, deliveryType: 'JARS', volume: 1180, volumeCrates: Math.round(1180 / 1.3), status: 'Pending' },
-
-  // KEGS - Pending
-  { id: '10', stringId: '110', driver: 'Michael Chen', deliveryDate: '13/04/24', orders: 6, outlets: 5, deliveryType: 'KEGS', volume: 480, volumeCrates: Math.round(480 / 1.3), status: 'Pending' },
-  { id: '11', stringId: '111', driver: 'Emma Wilson', deliveryDate: '15/04/24', orders: 9, outlets: 7, deliveryType: 'KEGS', volume: 750, volumeCrates: Math.round(750 / 1.3), status: 'Pending' },
-  { id: '12', stringId: '112', driver: 'James Brown', deliveryDate: '14/04/24', orders: 11, outlets: 8, deliveryType: 'KEGS', volume: 920, volumeCrates: Math.round(920 / 1.3), status: 'Pending' },
-
-  // MECHA - Pending
-  { id: '13', stringId: '113', driver: 'Olivia Davis', deliveryDate: '13/04/24', orders: 2, outlets: 2, deliveryType: 'MECHA', volume: 150, volumeCrates: Math.round(150 / 1.3), status: 'Pending' },
-  { id: '14', stringId: '114', driver: 'David Kipyegon', deliveryDate: '16/04/24', orders: 14, outlets: 11, deliveryType: 'MECHA', volume: 1260, volumeCrates: Math.round(1260 / 1.3), status: 'Pending' },
-  { id: '15', stringId: '115', driver: 'Sunset Shop', deliveryDate: '14/04/24', orders: 8, outlets: 6, deliveryType: 'MECHA', volume: 640, volumeCrates: Math.round(640 / 1.3), status: 'Pending' },
-
-  // CORE - Finalized
-  { id: '16', stringId: '201', driver: 'Robert Miller', deliveryDate: '12/04/24', orders: 10, outlets: 8, deliveryType: 'CORE', volume: 850, volumeCrates: Math.round(850 / 1.3), status: 'Finalized' },
-  { id: '17', stringId: '202', driver: 'Sophia Garcia', deliveryDate: '11/04/24', orders: 6, outlets: 5, deliveryType: 'CORE', volume: 520, volumeCrates: Math.round(520 / 1.3), status: 'Finalized' },
-  { id: '18', stringId: '203', driver: 'William Rodriguez', deliveryDate: '12/04/24', orders: 7, outlets: 6, deliveryType: 'CORE', volume: 610, volumeCrates: Math.round(610 / 1.3), status: 'Finalized' },
-
-  // JARS - Finalized
-  { id: '19', stringId: '204', driver: 'Isabella Martinez', deliveryDate: '11/04/24', orders: 5, outlets: 4, deliveryType: 'JARS', volume: 420, volumeCrates: Math.round(420 / 1.3), status: 'Finalized' },
-  { id: '20', stringId: '205', driver: 'Benjamin Anderson', deliveryDate: '12/04/24', orders: 9, outlets: 7, deliveryType: 'JARS', volume: 770, volumeCrates: Math.round(770 / 1.3), status: 'Finalized' },
+  // { id: '1', stringId: '101', driver: 'Jose Hardewa', deliveryDate: '13/04/24', orders: 8, outlets: 6, deliveryType: 'CORE', volume: 720, volumeCrates: Math.round(720 / 1.3), status: 'Pending' },
+  // { id: '2', stringId: '102', driver: 'Albert Leriche', deliveryDate: '14/04/24', orders: 12, outlets: 9, deliveryType: 'CORE', volume: 1050, volumeCrates: Math.round(1050 / 1.3), status: 'Pending' },
+  // { id: '3', stringId: '103', driver: 'Ify Kiplimo', deliveryDate: '13/04/24', orders: 5, outlets: 4, deliveryType: 'CORE', volume: 380, volumeCrates: Math.round(380 / 1.3), status: 'Pending' },
+  // { id: '4', stringId: '104', driver: 'David Karanja', deliveryDate: '15/04/24', orders: 15, outlets: 12, deliveryType: 'CORE', volume: 1340, volumeCrates: Math.round(1340 / 1.3), status: 'Pending' },
+  // { id: '5', stringId: '105', driver: 'Cheryll Onyango', deliveryDate: '13/04/24', orders: 3, outlets: 3, deliveryType: 'CORE', volume: 210, volumeCrates: Math.round(210 / 1.3), status: 'Pending' },
+  //
+  // // JARS - Pending
+  // { id: '6', stringId: '106', driver: 'John Mwangi', deliveryDate: '14/04/24', orders: 10, outlets: 7, deliveryType: 'JARS', volume: 890, volumeCrates: Math.round(890 / 1.3), status: 'Pending' },
+  // { id: '7', stringId: '107', driver: 'Benson Othieno', deliveryDate: '13/04/24', orders: 4, outlets: 3, deliveryType: 'JARS', volume: 320, volumeCrates: Math.round(320 / 1.3), status: 'Pending' },
+  // { id: '8', stringId: '108', driver: 'Mungai Abrams', deliveryDate: '16/04/24', orders: 7, outlets: 5, deliveryType: 'JARS', volume: 560, volumeCrates: Math.round(560 / 1.3), status: 'Pending' },
+  // { id: '9', stringId: '109', driver: 'Sarah Johnson', deliveryDate: '14/04/24', orders: 13, outlets: 10, deliveryType: 'JARS', volume: 1180, volumeCrates: Math.round(1180 / 1.3), status: 'Pending' },
+  //
+  // // KEGS - Pending
+  // { id: '10', stringId: '110', driver: 'Michael Chen', deliveryDate: '13/04/24', orders: 6, outlets: 5, deliveryType: 'KEGS', volume: 480, volumeCrates: Math.round(480 / 1.3), status: 'Pending' },
+  // { id: '11', stringId: '111', driver: 'Emma Wilson', deliveryDate: '15/04/24', orders: 9, outlets: 7, deliveryType: 'KEGS', volume: 750, volumeCrates: Math.round(750 / 1.3), status: 'Pending' },
+  // { id: '12', stringId: '112', driver: 'James Brown', deliveryDate: '14/04/24', orders: 11, outlets: 8, deliveryType: 'KEGS', volume: 920, volumeCrates: Math.round(920 / 1.3), status: 'Pending' },
+  //
+  // // MECHA - Pending
+  // { id: '13', stringId: '113', driver: 'Olivia Davis', deliveryDate: '13/04/24', orders: 2, outlets: 2, deliveryType: 'MECHA', volume: 150, volumeCrates: Math.round(150 / 1.3), status: 'Pending' },
+  // { id: '14', stringId: '114', driver: 'David Kipyegon', deliveryDate: '16/04/24', orders: 14, outlets: 11, deliveryType: 'MECHA', volume: 1260, volumeCrates: Math.round(1260 / 1.3), status: 'Pending' },
+  // { id: '15', stringId: '115', driver: 'Sunset Shop', deliveryDate: '14/04/24', orders: 8, outlets: 6, deliveryType: 'MECHA', volume: 640, volumeCrates: Math.round(640 / 1.3), status: 'Pending' },
+  //
+  // // CORE - Finalized
+  // { id: '16', stringId: '201', driver: 'Robert Miller', deliveryDate: '12/04/24', orders: 10, outlets: 8, deliveryType: 'CORE', volume: 850, volumeCrates: Math.round(850 / 1.3), status: 'Finalized' },
+  // { id: '17', stringId: '202', driver: 'Sophia Garcia', deliveryDate: '11/04/24', orders: 6, outlets: 5, deliveryType: 'CORE', volume: 520, volumeCrates: Math.round(520 / 1.3), status: 'Finalized' },
+  // { id: '18', stringId: '203', driver: 'William Rodriguez', deliveryDate: '12/04/24', orders: 7, outlets: 6, deliveryType: 'CORE', volume: 610, volumeCrates: Math.round(610 / 1.3), status: 'Finalized' },
+  //
+  // // JARS - Finalized
+  // { id: '19', stringId: '204', driver: 'Isabella Martinez', deliveryDate: '11/04/24', orders: 5, outlets: 4, deliveryType: 'JARS', volume: 420, volumeCrates: Math.round(420 / 1.3), status: 'Finalized' },
+  // { id: '20', stringId: '205', driver: 'Benjamin Anderson', deliveryDate: '12/04/24', orders: 9, outlets: 7, deliveryType: 'JARS', volume: 770, volumeCrates: Math.round(770 / 1.3), status: 'Finalized' },
 ];
 
 export const mockTrips: ShipmentTrip[] = [
