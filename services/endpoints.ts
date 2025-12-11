@@ -1,4 +1,4 @@
-export const HOST = "http://34.28.232.231:5010"
+export const HOST = "api"
 
 interface EndpointSpecs {
     url: string;
